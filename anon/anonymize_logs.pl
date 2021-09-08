@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # anonymize logs for uat
-# version 1.1.1
+# version 1.2.1
 
 package Anonymizer;
 use strict;
@@ -11,7 +11,7 @@ use integer;
 binmode(STDOUT, "encoding(UTF-8)");
 
 my $log_dir = "logs";
-my $anon_log_dir = "anonymous_logs";
+my $anon_log_dir = "anonymous_logs1";
 my $category;
 my $subtype;
 my $subtype_dir;
@@ -465,6 +465,58 @@ sub anon_string($)
 	return $anon_str;
 }
 
+# $v -> input string
+# $chars -> array with output chars
+# $exept -> string with chars to not convert
+# $start -> start convert from this position
+# $ignore_begin -> string with chars that do not convert at the beginning of the line
+# $in_chars -> if not found in @chars then return original string
+sub anon_generic {
+ my ($v, $chars, $exept, $start, $ignore_begin, $in_chars) = @_;
+ my $max = scalar @$chars;
+ # print "max=$max\n";
+ my @b = split('',$v);
+ my $len = scalar @b;
+ # initialize salt
+ my $salt = $default_salt;
+ # initialize key
+ my $key = ord(@b[$len-1])+17-48;	
+ my $val=0;
+ my $cc=0;
+ my $l;
+ my $pos=0;
+ my $begin=1;
+	foreach $l (@b) {
+		$salt += ord($l);
+		if($in_chars==1) {
+			if( !grep( /^$l$/, @$chars)) { 
+				print "$l not in chars!\n";
+				return $v;
+			};
+		};
+	};
+	foreach $l (@b) {
+		my $ol = ord($l);
+		
+		if(index($exept,$l)<0 and $pos>=$start and !($begin==1 and index($ignore_begin,$l)>=0)) {
+			$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
+			$val = ( ($key % 177)-$cc) % 177 ;
+			while($val<0) { $val += $max;};
+			$cc = $val;
+			
+			if (++$salt >= 20857) {
+				$salt = 0;
+			}
+			$key = $key + $key + ( $cc ^ $ol) + $salt;
+			@b[$pos] = @$chars[$cc % $max];
+		};
+		$pos++;
+	};
+	my $anon_str = join('',@b);
+	# print "> $v -> $anon_str\n";
+	return $anon_str;
+}
+
 sub anon_ustring($)
 {
  my $v = $_[0];
@@ -472,19 +524,14 @@ sub anon_ustring($)
  my $cc=0;
  my $salt = $default_salt;
  my @b = split('',$v);
- # my @b = split('', "123abcΑΒΓ");
  my $len = scalar @b;
- my $last_char = @b[$len-1];
- my $l0 = ord($last_char);
-# print "len=$len l0=$l0\n";
- my $key  = ord(@b[$len-1])+17-48;	
+ my $key = ord(@b[$len-1])+17-48;	
  my $val=0;
  my $i=0;
  my $l;
 	foreach $l (@b) {
 		$salt += ord($l);
 	};
-	# print " :last_char [$last_char] ord=$l0\n";
 	# print " > [$v] len=$len,salt=$salt,k0=$key\n";
 	foreach $l (@b) {	
 		my $ol=ord($l);
@@ -577,6 +624,7 @@ sub anon_phone($)
 	return $anon_str;
 }
 
+
 sub anon_ipv4($)
 {
 	my $v = $_[0];
@@ -603,7 +651,8 @@ sub anonymize_field ($$)
 
 	if($f eq "") { return "";};
 	if($type eq "none") { return $f;};
-	if($type eq "string") { return anon_ustring($f);};
+	# if($type eq "string") { return anon_ustring($f);};
+	if($type eq "string") { return anon_generic($f,\@unum_digits,".@\/",0);};
 	if($type eq "phone") { return anon_phone($f);};
 	if($type eq "anum") { return anon_anum($f);};
 #	if($type eq "email") { return anon_email($f);};
@@ -737,6 +786,37 @@ sub get_dir($)
 # my $out=anon_ustring($in);
 # print "in [ $in ] -> [ $out ]\n";
 # exit;
+my $test=1;
+if($test==1) {
+	my $in;
+	my $out;
+	$in="This is ’ελληνικά γράμματα’";
+	$out=anon_generic($in,\@unum_digits,".@/",0);
+	print "anon_ustring    : in [ $in ] -> [ $out ]\n";
+	$out=anon_ustring($in);
+	print "anon_ustring new: in [ $in ] -> [ $out ]\n";
+	$in="00abcde134";
+	$out=anon_idhex($in);
+	print "anon hex	: in [$in] -> [$out]\n";
+	$out=anon_generic($in,\@hex_digits,"",0,"0");
+	print "anon hex	: in [$in] -> [$out]\n";
+	$in="dummy";
+	$out=anon_generic($in,\@num_digits,"",0,"06",1);
+	print "anon phone: in [$in] -> [$out]\n";
+	$in="0006544";
+	$out=anon_generic($in,\@num_digits,"",0,"06",1);
+	print "anon phone: in [$in] -> [$out]\n";
+	$out=anon_phone($in);
+	print "anon phone: in [$in] -> [$out]\n";
+	$in = "triantafillou kostas\@test.gr";
+	$out=anon_generic($in,\@anum_digits,".@?:",0,"",0);
+	print "anon_anum new : in [ $in ] -> [ $out ]\n";
+	$out=anon_anum($in);
+	print "anon_anum : in [ $in ] -> [ $out ]\n";
+
+	exit;
+};
+
 # initialize anonymized directory
 `rm -rf $anon_log_dir`;
 # for each log category

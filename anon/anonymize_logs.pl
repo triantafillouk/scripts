@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # anonymize logs for uat
-# version 1.1.0
+# version 1.1.1
 
 package Anonymizer;
 use strict;
@@ -712,10 +712,12 @@ sub anon_done($$)
  my @fa = split('\.',$fname,100);
  my $cat = @fa[1];
  my $type = @fa[2];
- print "anon_done: cat=$cat, type=$type name=$fname\n";
- my $anon_archive_dir = $anon_log_dir+"/"+$cat+"/queue/"+$type+"/archive";
+ # print "anon_done: cat=$cat, type=$type name=$fname\n";
+ my $anon_archive_dir = "$anon_log_dir/$cat/queue/$type/archive";
  `mkdir -p $anon_archive_dir`;
- print "  : -> $anon_archive_dir  $fname\n";
+ # print "  : -> $anon_archive_dir  $fname\n";
+ # print "  : source=$source_dir -> outdor=$anon_archive_dir -----\n";
+ 
  anonymize_file($source_dir,$fname,$anon_archive_dir,$cat,$type);
 }
 
@@ -739,7 +741,7 @@ sub get_dir($)
 my @categories = get_dir($log_dir);
 foreach $category (@categories)
 {
-	if(0) {
+	if(1) {
 	# print "# $category\n";
 	# for each subcategory dir
 	$subtype_dir = "$log_dir/$category/queue";
@@ -769,21 +771,20 @@ foreach $category (@categories)
 	foreach my $done_dir (@category_dirs) {
 		my $fdname = "$category_dir/$done_dir";
 		if ( -d $fdname) {
-			print "subdirectory [$done_dir]\n";
 			if ($done_dir =~ "done*") {
-				print "done_dir is $done_dir\n";
+				print "done dir is $done_dir\n";
 				my @done0_contents = get_dir($fdname);
 				foreach my $done0_file (@done0_contents) {
 					my $done0_name = "$fdname/$done0_file";
 					if(-d $done0_name) {
-						print "	dir=$done0_name\n";
+						print "	  done subdir is $done0_name\n";
 						my @done1_contents = get_dir($done0_name);
 						foreach my $done1_file (@done1_contents) {
 							anon_done($done0_name,$done1_file);
 						};
 					} else {
-						print " file$done0_name\n";
-						anon_done($fdname,$done0_name);
+						# print " file$done0_name\n";
+						anon_done($fdname,$done0_file);
 					};
 				};
 			};

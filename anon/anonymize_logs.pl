@@ -592,8 +592,7 @@ sub anon_ipv6($)
 # anonymize_field(value,field name)
 sub anonymize_field ($$)
 {
-	my $f = $_[0];
-	my $field_name = $_[1];
+	my ($f, $field_name) = @_;
 	my $af;
 	my $type = $field_names{$field_name};
 
@@ -620,11 +619,8 @@ sub anonymize_field ($$)
 # anonymize_file(source_dir,file name,destination dir,category, subtype)
 sub anonymize_file($$$$$)
 {
- my $from = $_[0];
- my $file = $_[1];
- my $out_dir  = $_[2];
- my $category = $_[3];
- my $subtype = $_[4];
+ my ($from, $file, $out_dir,$category,$subtype) = @_;
+
  my $fname = "$from/$file";
  my $out_file = "$out_dir/$file";
  my $type;
@@ -649,8 +645,13 @@ sub anonymize_file($$$$$)
 
 	my $oldsize = -s $fname;
 
-	open my $in, "<:encoding(utf8)", $fname or die "$fname: $!";
-	open(FH, '>:encoding(UTF-8)', $out_file) or die $!;
+	# open my $in, "<:encoding(utf8)", $fname or die "$fname: $!";
+	open(FIN,  '<:encoding(utf8)', $fname) or die "$fname: $!";
+# 	FIN->autoflush(1);
+	# open(FIN,  '<:raw:perlio:utf8', $fname) or die "$fname: $!";
+	open(FOUT, '>:encoding(UTF-8)', $out_file) or die $!;
+	# FOUT->autoflush(1);
+	# open(FOUT, '>:raw:perlio:utf8', $out_file) or die $!;
 	# set the separator for the split command
 	my $sep1;
 	#	print " Separator is [$sep] ------------------------------------\n";
@@ -666,7 +667,7 @@ sub anonymize_file($$$$$)
 		# print "sep = [$sep1] [|]\n";
 	};
 
-	while (my $line = <$in>) {
+	while (my $line = <FIN>) {
 		my @line;
 		my $line_fields;
 		chomp $line;
@@ -689,11 +690,11 @@ sub anonymize_file($$$$$)
 		};
 		my $line_out = join ($sep,@line_out);
 		# write the line to out file
-		print FH "$line_out\n";
+		print FOUT "$line_out\n";
 		# print "-- $line_out --\n";
 	};
-	close $in;
-	close FH;
+	close FIN;
+	close FOUT;
 
 	my $new_size = -s $out_file;
 	print " > $file oldsize = $oldsize new size=$new_size\n";
@@ -706,8 +707,9 @@ sub anonymize_file($$$$$)
 
 sub anon_done($$)
 {
- my $source_dir = $_[0];
- my $fname = $_[1];
+ my ($source_dir, $fname) = @_;
+#  my $source_dir = $_[0];
+#  my $fname = $_[1];
  
  my @fa = split('\.',$fname,100);
  my $cat = @fa[1];

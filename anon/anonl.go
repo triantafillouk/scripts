@@ -1,5 +1,5 @@
 // go version of anon_logs
-// version 1.1.1
+// version 1.2.1
 
 package main
 
@@ -46,10 +46,10 @@ type CAT_DEFINITION struct {
 }
 
 
-var num_digits = [MAX_NUM_DIGITS]int {'0','1','2','3','4','5','6','7','8','9'};
-var hex_digits = [MAX_HEX_DIGITS]int {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-var anum_digits = [MAX_ANUM_DIGITS]int { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-var unum_digits = [MAX_UNUM_DIGITS]int { 
+var num_digits = []int {'0','1','2','3','4','5','6','7','8','9'};
+var hex_digits = []int {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+var anum_digits = []int { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+var unum_digits = []int { 
 	'0','1','2','3','4','5','6','7','8','9',
 	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 	'Α','Β','Γ','Δ','Ε','Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο','Π','Ρ','Σ','Τ','Υ','Φ','Χ','Ψ','Ω' };
@@ -208,6 +208,10 @@ func anon_none (f string) string {
 	return f
 }
 
+func anon_anum1 (f string) string {
+	return anon_generic(f,anum_digits,".@?:",0,"",0)
+}
+
 func anon_anum (f string) string {
 	var salt int = DEFAULT_SALT 
 	var len = len(f)
@@ -239,6 +243,10 @@ func anon_anum (f string) string {
 	s:= string(sarray[:])
 	// fmt.Println("	>",s)
 	return s
+}
+
+func anon_phone1 (f string) string {
+	return anon_generic(f,num_digits,"",0,"06",1)
 }
 
 func anon_phone (f string) string {
@@ -286,62 +294,10 @@ func anon_phone (f string) string {
 	return s
 }
 
-func anon_string (f string) string {
-	var salt int = DEFAULT_SALT 
-	var flen = len(f)
-	var sarray = []byte(f)
-	var cc int = 0
-	var val int = 0
-	var key int = int(sarray[flen-1])+17-48
-	is_utf := false
-	for _,l := range sarray {
-		salt += int(l)
-//		fmt.Println(" ",i,"v=",int(l),"salt=",salt)
-	}
-//	var slen = len(sarray);
-//	fmt.Println(" > len=",slen,",salt=",salt,"k0=",key)
-	for i:=0;i<flen;i++ {
-		var l = sarray[i]
-		var ll int = int(l)
-//		fmt.Println("	",i," l=",l)
-	 	if(l<'0' || (l>'9' && l<'A') || (l>'Z'&&l<'a') || (l>'z' && l<128)) {
-		} else {
-			if is_utf {
-				key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-				val = ((key % 177)-cc)%177
-				for val<0 { val += MAX_ANUM_DIGITS }
-				cc=val
-				salt++
-				if( salt >= 20857) {
-					salt=0
-				}
-				key = key + key + (cc ^ ll) + salt
-//				fmt.Println(" CE val=",val,"cc=",cc,"salt=",salt);
-				sarray[i] = byte(0x91+cc%24)
-				
-				is_utf=false
-			} else {
-				if(l>=0xCE) {
-					sarray[i]=0xCE
-					is_utf=true
-				} else {
-					key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-					val = ((key % 177)-cc)%177
-					for val<0 { val += MAX_ANUM_DIGITS }
-					cc=val
-					salt++
-					if( salt >= 20857) {
-						salt=0
-					}
-					key = key + key + (cc ^ ll) + salt
-					sarray[i] = byte(anum_digits[ cc % MAX_ANUM_DIGITS])
-				}		
-			}
-		}
-	};
-	s:= string(sarray[:])
-//	fmt.Println(s)
-	return s
+
+
+func anon_ustring1 (f string) string {
+	return anon_generic(f,unum_digits,".@/",0,"",0)
 }
 
 func anon_ustring (f string) string {
@@ -385,6 +341,70 @@ func anon_ustring (f string) string {
 	return s
 }
 
+func contains(l int,array []int) bool {
+	for _,i := range array {
+		if (i==l) {
+			return true
+		}
+	}
+	return false
+}
+
+// v -> input string
+// chars -> array with output chars
+// exept -> string with chars to not convert
+// start -> start convert from this position
+// ignore_begin -> string with chars that do not convert at the beginning of the line
+// in_chars -> if not found in @chars then return original string
+
+func anon_generic (v string, chars []int, except string,start int,ignore_begin string,in_char int) string {
+	var max = len(chars)
+	var salt int = DEFAULT_SALT 
+	var sarray = []rune(v)
+	var flen = len(sarray)
+	var cc int = 0
+	var val int = 0
+//	fmt.Println("len=",flen," l0=",int(l0))
+	var key int = int(sarray[flen-1])+17-48
+	var begin = true
+	for _,l := range sarray {
+		salt += int(l)
+//		fmt.Println(" ",i,"v=",int(l),"salt=",salt)
+	}
+//	fmt.Println(" > len=",flen,",salt=",salt,"k0=",key)
+	for i,l := range sarray {
+		var ll int = int(l)
+//		fmt.Println(" ",l,"->",ll)
+	 	if( strings.Index(except,string(l))>=0 || i<start || (strings.Index(ignore_begin,string(l))>-1 && begin) ){
+//			fmt.Println("skip ",l);
+			sarray[i]=l;
+		} else {
+			if(in_char==1) {
+				if !contains(int(l),chars) {
+					return v 
+				}
+			}
+			begin = false
+			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
+			val = ((key % 177)-cc)%177
+			for val<0 { val += max }
+			cc=val
+			salt++
+			if( salt >= 20857) {
+				salt=0
+			}
+			key = key + key + (cc ^ ll) + salt
+			// l = rune(unum_digits[ cc % MAX_UNUM_DIGITS])
+			// fmt.Println(i,l,unum_digits[ cc % MAX_UNUM_DIGITS],unum_digits[ cc % MAX_UNUM_DIGITS])
+			sarray[i] = rune(chars[cc % max])
+			
+		}
+	};
+	s:= string(sarray[:])
+//	fmt.Println(s)
+	return s
+}
+
 
 func test_string (f string) string {
 	var sarray = []rune(f)
@@ -392,6 +412,10 @@ func test_string (f string) string {
 		fmt.Println(" ",i,"v=",int(l),"l=",l)
 	}
 	return f
+}
+
+func anon_email1 (f string) string {
+	return anon_generic(f,anum_digits,"@.",0,"",0)
 }
 
 func anon_email (f string) string {
@@ -425,6 +449,10 @@ func anon_email (f string) string {
 	s:= string(sarray[:])
 //	fmt.Println(s)
 	return s
+}
+
+func anon_idnum1 (f string) string {
+	return anon_generic(f,num_digits,"",0,"0",1)
 }
 
 func anon_idnum (f string) string {
@@ -468,6 +496,10 @@ func anon_ipv4 (f string) string {
 
 func anon_ipv6 (f string) string {
 	return f
+}
+
+func anon_idhex1 (f string) string {
+	return anon_generic(f,hex_digits,"",0,"0",0)
 }
 
 func anon_idhex (f string) string {
@@ -526,13 +558,13 @@ func substr(input string, start int, length int) string {
 var anon_function = []func(string) string {
 	anon_none,
 	anon_anum,
-	anon_phone,
-	anon_ustring,
-	anon_email,
-	anon_idnum,
+	anon_phone1,
+	anon_ustring1,
+	anon_email1,
+	anon_idnum1,
 	anon_ipv4,
 	anon_ipv6,
-	anon_idhex,
+	anon_idhex1,
 	crypt_domain,
 }
 
@@ -698,6 +730,7 @@ func main() {
 	}
 
 	// initialize anonymized directory
+	fmt.Println("Initialize anonymized directory",anon_log_dir);
 	os.RemoveAll(anon_log_dir)
 
 	category_files, err := ioutil.ReadDir(log_dir)
@@ -734,12 +767,14 @@ func main() {
 		}
 		}
 // *******************************************************
+
 		category_dir := log_dir+"/"+cat_dir.Name()
 		category_dirs, err := ioutil.ReadDir(category_dir)
 		if err!=nil {
 			fmt.Println("Cannot read directory ",category_dir);
 			return
 		};
+
 		for _, done_dir := range category_dirs {
 			dname := done_dir.Name()
 			fdname := category_dir+"/"+done_dir.Name()

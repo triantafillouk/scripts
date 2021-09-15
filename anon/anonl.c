@@ -1,7 +1,7 @@
 /*
-	Anonymize logs
+		Anonymize logs
 */
-#define	version "cc_stl 1.2.3"
+#define	version "c 1.2.1"
 #include <stdio.h>
 #include <stdlib.h>
 // #include <strings.h>
@@ -10,28 +10,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include "alist.h"
 
-#if	USE_STL
-#include <unordered_map>
-using namespace std;
-unordered_map<string, int > bt_field_table;
-#else
-#include "alist1.h"
+#define MAX_CATEGORY	20
 BTREE *bt_field_table;
-#endif
 
 #define TEST	1
 
-const char *log_dir = "logs";
-#if	USE_STL
-#if	USE_GENERIC
-const char *anon_log_dir = "anonymous_logs_cc_stl1";
-#else
-const char *anon_log_dir = "anonymous_logs_cc_stl";
-#endif
-#else
-const char *anon_log_dir = "anonymous_logs_cc";
-#endif
+char *log_dir = "logs";
+char *anon_log_dir = "anonymous_logs_c";
 
 enum {
 	T_NONE,
@@ -51,21 +38,22 @@ enum {
 #define	MAX_HEX_DIGITS	16
 #define MAX_ANUM_DIGITS	36
 #define	MAX_UNUM_DIGITS 60
+#define	true	1
+#define	false	0
 
 const unsigned char *anon_generic (const char *v, const char *chars[], int max, const char *except, int start,const char *ignore_begin,int in_char);
 
 typedef struct FIELD_TYPE
 {
- const char *name;
+ char *name;
  int type;
 } FIELD_TYPE;
 
 typedef struct CAT_DEFINITION {
-	const char *name;
-	const char *sep;
-	const char **field;
+	char *name;
+	char *sep;
+	char **field;
 } CAT_DEFINITION;
-
 
 int num_digits[] = {'0','1','2','3','4','5','6','7','8','9',0};
 int hex_digits[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F',0};
@@ -111,8 +99,8 @@ FIELD_TYPE field_types[] = {
 {"mailserver_type"		, T_NONE  },	// dovecot, amavis, postfix-smtpd ..
 {"queue"				, T_NONE  },	// F40D81D0008C (hex number)
 {"session"				, T_NONE  },	// d60EqHemurbDqgAq
-{"message_id"			, T_STRING  },	// 3d9c2dc4-974a-4a9f-b6b1-22be8164481e_ebd4bd83-cd01-4832-bd87-5397606fcf28_20200525112519@brandsgalaxy.gr
-{"resent_message_id"	, T_STRING  },	// 
+{"message_id"			, T_STRING},	// 3d9c2dc4-974a-4a9f-b6b1-22be8164481e_ebd4bd83-cd01-4832-bd87-5397606fcf28_20200525112519@brandsgalaxy.gr
+{"resent_message_id"	, T_STRING},	// 
 {"sender"				, T_EMAIL },	// notification@facebookmail.com
 {"receiver"				, T_EMAIL },	// vm1977@otenet.gr
 {"user"					, T_EMAIL },	// empty, xxxxx@xxx.com
@@ -123,7 +111,7 @@ FIELD_TYPE field_types[] = {
 {"orig_to"				, T_EMAIL },	// 
 {"sasl_sender"			, T_EMAIL },	//
 {"remote_ip"			, T_IPV4  },	//
-{"content_ifnot_queue"	, T_STRING  }, 	// lmtp(xxxx@otenet.gr) | (03908-22) Passed {CLEAN|BADHEADER} (it might have commas!)
+{"content_ifnot_queue"	, T_STRING}, 	// lmtp(xxxx@otenet.gr) | (03908-22) Passed {CLEAN|BADHEADER} (it might have commas!)
 {"subscriber_type"		, T_NONE  },	// 0
 {"imei"					, T_IDNUM },	// 353420100443370
 {"imsi"					, T_IDNUM },	// 208201402275281
@@ -173,7 +161,7 @@ FIELD_TYPE field_types[] = {
 {"outgoingproduct"		, T_NONE  },	// IPTL
 {"datavolume"			, T_NONE  },	// 
 {"dataunit"				, T_NONE  },	// 
-{"usersummarisation"	, T_STRING  },	// 
+{"usersummarisation"	, T_STRING},	// 
 {"udcsreserved"			, T_NONE  },	// 
 {"product"				, T_NONE  },	// 00001 149-Αμεση συνδιάλεξη
 {"username"				, T_EMAIL },	// isgo56@otenet.gr
@@ -193,7 +181,7 @@ FIELD_TYPE field_types[] = {
 {"ishybrid"				, T_NONE  },	// false
 {"validity_date_start"	, T_NONE  },	// 20171110000000
 {"validity_date_end"	, T_NONE  },	// 20190930235959
-{"calling_address"		, T_STRING  },	// Νομός Ηρακλείου - ΑΕΡΟΛΙΜΗΝ ΗΡΑΚΛΕΙΟΥ
+{"calling_address"		, T_STRING},	// Νομός Ηρακλείου - ΑΕΡΟΛΙΜΗΝ ΗΡΑΚΛΕΙΟΥ
 {"card_balance_contained",T_NONE  },	// 3.36
 {"card_balance_consumed", T_NONE  },	// 0.28
 {"card_number"			, T_IDNUM },	// 0507974295
@@ -233,9 +221,10 @@ FIELD_TYPE field_types[] = {
 {"callid_hex"			, T_IDHEX },	// ABCD665600
 {"inowner"				, T_NONE  },	// 2351028148
 {"misc"					, T_NONE  },	// 00000000
-{"reserved"				, T_STRING  },	// 
+{"reserved"				, T_STRING},	// 
 {NULL,0}
 };
+
 
 unsigned const char *anon_none(const char *v)
 {
@@ -246,6 +235,7 @@ unsigned const char *anon_anum1(const char *v)
 {
 	return anon_generic(v,canum_digits,MAX_ANUM_DIGITS,".@?:",0,"",0);
 }
+
 
 unsigned const char *anon_anum(const char *v)
 {
@@ -507,7 +497,7 @@ const unsigned char *anon_generic (const char *v, const char *chars[], int max,c
 	int is_utf=0;
 	int first_byte;
 	int ulen=0;
-	bool begin=true;
+	int begin=true;
 
 	// for(;chars[max][0]!=0;max++);
 
@@ -662,8 +652,6 @@ const unsigned char *anon_email(const char *v)
  return (unsigned char *)anon_str;
 }
 
-
-
 const unsigned char *anon_ipv4(const char *v)
 {
 	return (unsigned char *)v;
@@ -679,7 +667,6 @@ const unsigned char *anon_ipv6(const char *v)
 {
 	return (unsigned char *)v;
 }
-
 
 const unsigned char *(*anon_function[])(const char *c) = {
 	anon_none,
@@ -707,36 +694,22 @@ const unsigned char *(*anon_function1[])(const char *c) = {
 	crypt_domain
 };
 
-const char *anonymize_field(char *f,const char *field_name)
+char *anonymize_field(char *f,char *field_name)
 {
 	if(f[0]==0) return "";
-#if	USE_STL
-	unordered_map<string, int>:: iterator itr;
-	itr = bt_field_table.find(field_name);
-	int type = itr->second;
-#else
 	int type = btival(bt_field_table,field_name);
-#endif
-
-	// printf("anonymize_field: %s -> %d\n",field_name,type);
+//	printf("anonymize_field: %s -> %d\n",field_name,type);
 #if	1
-//	char *(afun)(char *c) = anon_function[type];
-//	return afun(f);
-//	if(!strcmp(f,"DUMMY")) printf("type=%d field=%s DUMMY\n",type,field_name);
-#if	USE_GENERIC
-	return ((char *)anon_function1[type](f));
-#else
-	return ((char *)anon_function[type](f));
-#endif
+	return anon_function1[type](f);
 #else
 	switch(type) {
 		case T_NONE:	return anon_none(f);
-		case T_STRING:	return anon_anum(f);
+		case T_STRING:	return anon_string(f);
 		case T_PHONE:	return anon_phone(f);
-		case T_EMAIL:	return anon_email(f);
-		case T_ANUM:	return anon_anum(f);
-		case T_IDHEX:	return anon_idhex(f);
-		case T_IDNUM:	return anon_idnum(f);
+		case T_EMAIL:	return crypt_email(f);
+		case T_ANUM:	return crypt_anum(f);
+		case T_IDHEX:	return crypt_idhex(f);
+		case T_IDNUM:	return crypt_idnum(f);
 		case T_IPV4:	return anon_ipv4(f);
 		case T_IPV6:	return anon_ipv6(f);
 	};
@@ -753,7 +726,7 @@ void free_anon_array(char **array)
 	};
 }
 
-void print_sarray(FILE *f,char **array,const char *separator)
+void print_sarray(FILE *f,char **array,char *separator)
 {
  char **a=array;
  	fprintf(f,"%s",*a);
@@ -765,13 +738,12 @@ void print_sarray(FILE *f,char **array,const char *separator)
 		*a++;
 	};
 	fprintf(f,"\n");
-//	fprintf(stdout,"\n");
 }
 
-const char *check1 = "start field<*>field1<*>field3<*>last field";
-const char *check2 = "start field|field1|field3|last field";
-const char *check3 = "start field,field1,field3,last field";
-const char *check4 = "20200101020400|KT_Trs.2020-01-01.csv|20200102010001|4229827|20190904000000|20210701235959|2531073127|Νομός Ροδόπης - ΚΡΑΤΗΤΗΡΙΑ, ΑΣΤΥΝΟΜΙΑ, ΛΕΣΧΗ, ΚΟΜΟΤΗΝΗ|6975694249|140|3.6|0.2|0508943966|";
+char *check1 = "start field<*>field1<*>field3<*>last field";
+char *check2 = "start field|field1|field3|last field";
+char *check3 = "start field,field1,field3,last field";
+char *check4 = "20200101020400|KT_Trs.2020-01-01.csv|20200102010001|4229827|20190904000000|20210701235959|2531073127|Νομός Ροδόπης - ΚΡΑΤΗΤΗΡΙΑ, ΑΣΤΥΝΟΜΙΑ, ΛΕΣΧΗ, ΚΟΜΟΤΗΝΗ|6975694249|140|3.6|0.2|0508943966|";
 
 void free_sarray(char **sarray)
 {
@@ -781,23 +753,23 @@ void free_sarray(char **sarray)
 }
 
 // use the above free_sarray function to free the resulting array after use!
-char **split_str_sarray(const char *str,const char *separator,int *count1)
+char **split_str_sarray(char *str,char *separator,int *count1)
 {
-	static char buffer[2048];
-	static char *array[100];
+// char **array=NULL;
+   char *buffer = NULL;
    int string_size;
    int sep_len = strlen(separator);
    int count=0;
+	static char *array[100];
 
    string_size=strlen(str);
-   if(string_size>2048) { printf("too large string %d\n",string_size);exit(1);};
-
-	strcpy(buffer,str);
-//	printf("split %s: %s\n",separator,str);
+   // Allocate a string that can hold it all
+   buffer = strdup(str);
+   if(buffer){
 	int i;
 	int l=0;
-	
 	char *start_substr=buffer;
+
 	while(start_substr=strstr(start_substr,separator)) {
 		start_substr[0]=0;
 		start_substr+=sep_len;
@@ -805,18 +777,21 @@ char **split_str_sarray(const char *str,const char *separator,int *count1)
 		count++;
 	};
 //	printf("split: count=%d\n",count);
-
-	const char *starts=str;
+	start_substr=str;
 	array[0]=buffer;
 	l=1;
-	while(starts=strstr(starts,separator)){
-		starts+=sep_len;
-//		printf("o=%ld\n",starts-buffer);
-		array[l++]=buffer+(starts-str);
+	while(start_substr=strstr(start_substr,separator)){
+		start_substr+=sep_len;
+//		printf("o=%ld\n",start_substr-buffer);
+		array[l++]=buffer+(start_substr-str);
 	};
 	array[l]=NULL;
 	*count1=count;
 //	for(l=0;l<count;l++) printf("%d: %s\n",l,array[l]);
+   } else {
+    *count1=0;
+   	return NULL;
+   }
  return array;
 }
 
@@ -830,7 +805,7 @@ void clear_snames(char **list,int size)
  free(list);
 }
 
-char **get_dir(const char *dirname,/*char *s_find, */int *num)
+char **get_dir(char *dirname,/*char *s_find, */int *num)
 {
  int n; /* no of files in directory */
  char **namelist=NULL;
@@ -858,26 +833,26 @@ char **get_dir(const char *dirname,/*char *s_find, */int *num)
 }
 
 // category_fields
-const char *email_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","logfile_line","mailserver_name","mailserver_type","queue","session","message_id","resent_message_id","sender","receiver","user","status","domain_not_found","helo","ctladdr","orig_to","sasl_sender","remote_ip","content_ifnot_queue",NULL};
-const char *gprs_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *chronocard_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","duration","calling","called","servicenumber","chronocard_id","balanceafter","balanceconsumed","expirationoffset","recseparator","parsed","service","prefix","number",NULL};
-const char *ict_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","usersummarisation","udcsreserved","parsed","service","prefix","number",NULL };
-const char *ict_csv_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number",NULL };
-const char *itu_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number",NULL };
-const char *itu_csv			[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number",NULL };
-const char *msc_sups_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *oss_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","a_number","b_number","duration","product","parsed","service","prefix","number",NULL };
-const char *orig_mms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *orig_msc_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *orig_pbx_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *orig_sms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *radious_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","username","acct_status_type","acct_session_time","acct_unique_session_id","framed_ip_address","nas_port_type","nas_port_id","calling_station_id","nas_ip_address","port_parsed","port_detail","delegated_ipv6_prefix","haap_lte_ipv4","haap_dsl_ipv4","ishybrid",NULL};
-const char *telecard_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","validity_date_start","validity_date_end","calling","calling_address","called","duration","card_balance_contained","card_balance_consumed","card_number",NULL };
-const char *term_mms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *term_msc_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *term_sms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
-const char *udsc_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","version", "seqnum", "networkid", "eventclass", "networkprod", "action", "eventsourceid", "ndr", "aaddrplan", "nde", "baddrplan", "newdest", "newdaddrplan", "chargedparty", "date", "starttime", "duratunit", "duration", "secondunit", "amountofsus", "acategory", "priority", "numsuppserv", "suppserv1", "suppserv2", "suppserv3", "suppserv4", "suppserv5", "suppserv6", "suppserv7", "suppserv8", "numgroups", "origcellid", "callid", "inowner", "misc", "reserved", "parsed", "service", "prefix", "number",NULL };
-const char *udsclike_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","version", "seqnum", "networkid", "eventclass", "networkprod", "action", "eventsourceid", "ndr", "aaddrplan", "nde", "baddrplan", "newdest", "newdaddrplan", "chargedparty", "date", "starttime", "duratunit", "duration", "secondunit", "amountofsus", "acategory", "priority", "numsuppserv", "suppserv1", "suppserv2", "suppserv3", "suppserv4", "suppserv5", "suppserv6", "suppserv7", "suppserv8", "numgroups", "origcellid", "callid_hex", "inowner", "misc", "reserved", "parsed", "service", "prefix", "number",NULL };
+char *email_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","logfile_line","mailserver_name","mailserver_type","queue","session","message_id","resent_message_id","sender","receiver","user","status","domain_not_found","helo","ctladdr","orig_to","sasl_sender","remote_ip","content_ifnot_queue",NULL};
+char *gprs_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *chronocard_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","duration","calling","called","servicenumber","chronocard_id","balanceafter","balanceconsumed","expirationoffset","recseparator","parsed","service","prefix","number",NULL};
+char *ict_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","usersummarisation","udcsreserved","parsed","service","prefix","number",NULL };
+char *ict_csv_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number",NULL };
+char *itu_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number",NULL };
+char *itu_csv			[]=	{"ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number",NULL };
+char *msc_sups_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *oss_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","a_number","b_number","duration","product","parsed","service","prefix","number",NULL };
+char *orig_mms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *orig_msc_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *orig_pbx_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *orig_sms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *radious_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","username","acct_status_type","acct_session_time","acct_unique_session_id","framed_ip_address","nas_port_type","nas_port_id","calling_station_id","nas_ip_address","port_parsed","port_detail","delegated_ipv6_prefix","haap_lte_ipv4","haap_dsl_ipv4","ishybrid",NULL};
+char *telecard_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","validity_date_start","validity_date_end","calling","calling_address","called","duration","card_balance_contained","card_balance_consumed","card_number",NULL };
+char *term_mms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *term_msc_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *term_sms_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn",NULL };
+char *udsc_fields		[]=	{"ts","src_filename","src_filedate","src_filesize","version", "seqnum", "networkid", "eventclass", "networkprod", "action", "eventsourceid", "ndr", "aaddrplan", "nde", "baddrplan", "newdest", "newdaddrplan", "chargedparty", "date", "starttime", "duratunit", "duration", "secondunit", "amountofsus", "acategory", "priority", "numsuppserv", "suppserv1", "suppserv2", "suppserv3", "suppserv4", "suppserv5", "suppserv6", "suppserv7", "suppserv8", "numgroups", "origcellid", "callid", "inowner", "misc", "reserved", "parsed", "service", "prefix", "number",NULL };
+char *udsclike_fields	[]=	{"ts","src_filename","src_filedate","src_filesize","version", "seqnum", "networkid", "eventclass", "networkprod", "action", "eventsourceid", "ndr", "aaddrplan", "nde", "baddrplan", "newdest", "newdaddrplan", "chargedparty", "date", "starttime", "duratunit", "duration", "secondunit", "amountofsus", "acategory", "priority", "numsuppserv", "suppserv1", "suppserv2", "suppserv3", "suppserv4", "suppserv5", "suppserv6", "suppserv7", "suppserv8", "numgroups", "origcellid", "callid_hex", "inowner", "misc", "reserved", "parsed", "service", "prefix", "number",NULL };
 
 
 CAT_DEFINITION categories[] = {
@@ -916,23 +891,23 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
  sprintf(out_file,"%s/%s",out_dir,file);
  char *type;
  type = (strcmp(subtype,"default")==0) ? category : subtype;
- // printf("		> anonymize: cat=%s subtype=%s type=%s\n",category,subtype,type);
+// printf("\n-- anonymize: cat=%s subtype=%s type=%s [%s] ------\n",category,subtype,type,out_file);
  // find subtype fields
- const char **category_fields=NULL;
- const char *category_sep;
- for(int i=0;categories[i].name;i++) {
+ int i=0;
+ char **category_fields=NULL;
+ char *category_sep=NULL;
+ while(categories[i].name) {
  	if(!strcmp(categories[i].name,type)){
 		category_fields = categories[i].field;
 		category_sep = categories[i].sep;
 //		printf("	field found!\n");
 		break;
-	};
+	};i++;
  };
- // return;
  if(category_fields) {
  	char in_line[2048];
 	FILE *in,*out;
-	// printf("anon file: %s\n",fname);
+//	printf("anon file: %s\n",fname);
 	in = fopen(fname,"r");
 	out = fopen(out_file,"w+");
 	while(fgets(in_line,2048,in)) {
@@ -944,8 +919,8 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 		int count=0;
 		int count1=0;
 		out_array = split_str_sarray(in_line,category_sep,&count);
-		// print_sarray(stdout,out_array,category_sep);
-		// printf("allocated %d\n",count);
+//		print_sarray(stdout,out_array,category_sep);
+//		printf("allocate %d\n",count);
 
 		for(int i=0;category_fields[i];i++) count1=i;
 		if(count!=count1) {
@@ -955,10 +930,10 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 		};
 		int i=0;
 		for(i=0;category_fields[i];i++) {
-			// printf(" %d - %s\n",i,category_fields[i]);
+//			printf("- %s\n",category_fields[i]);
 			strcpy(anon_data[i],anonymize_field(out_array[i],category_fields[i]));;
 			anon_array[i]=anon_data[i];
- 		};anon_array[i]=NULL;
+		};anon_array[i]=NULL;
 		print_sarray(out,anon_array,category_sep);
 	};
 	fclose(in);
@@ -995,61 +970,37 @@ char archive_dir[1024];
 char anon_archive_dir[1024];
 char s[1024];
 
-const char *test1 = "20200101020400|KT_Trs.2020-01-01.csv|20200102010001|4229827|20190904000000|20210701235959|2531073127|Νομός Ροδόπης - ΚΡΑΤΗΤΗΡΙΑ, ΑΣΤΥΝΟΜΙΑ, ΛΕΣΧΗ, ΚΟΜΟΤΗΝΗ|6975694249|140|3.6|0.2|0508943966";
+char *test1 = "20200101020400|KT_Trs.2020-01-01.csv|20200102010001|4229827|20190904000000|20210701235959|2531073127|Νομός Ροδόπης - ΚΡΑΤΗΤΗΡΙΑ, ΑΣΤΥΝΟΜΙΑ, ΛΕΣΧΗ, ΚΟΜΟΤΗΝΗ|6975694249|140|3.6|0.2|0508943966";
 
 
 int main(int argc,char **argp)
 {
 	int result=0;
 	struct stat t;
-#if	USE_STL
-	fprintf(stderr,"use_stl!\n");
-#else
-	fprintf(stderr,"use bt_tables\n");
-#endif
-	// anon_generic("aa",unum_digits,"",0,"",0);
-	// exit(0);
-#if	0
-	const unsigned char *res;
-	const char *inp="00698237";
-	res = anon_phone(inp);
-	printf("[%s] -> [%s]\n",inp,res);
-	res = anon_phone1(inp);
-	printf("[%s] -> [%s]\n",inp,res);
-	exit(0);
-#endif
 #if	TEST0
-	for(int i=0;categories[i].name !=NULL;i++) {
+	while(int i=0;categories[i].name !=NULL;i++) {
 		printf("%2d name=[%s] field [",i,categories[i].name);
 		int j=0;
-		for(int j=0;categories[i].field[j];j++) {
-			printf(" %s",categories[i].field[j]);
+		while(categories[i].field[j]) {
+			printf(" %s",categories[i].field[j++]);
 		};
 		printf("]\n");
-		i++;
 	};
 #endif
 #if	TEST0
 	char **a;
-	int count;
-	a=split_str_sarray(check4,"|",&count);
+	a=split_str_sarray(check4,"|");
 	printf("%s\n",check4);
 	print_sarray(stdout,a,"|");
-//	free_sarray(a);
+	free_sarray(a);
 	return 0;
 #endif
 
-#if	!USE_STL
 	bt_field_table=new_btree("table",0);
-#endif
-
 	for(int i=0;field_types[i].name;i++) {
-#if	USE_STL
-		bt_field_table[field_types[i].name] = field_types[i].type;
-#else
 		set_btival(bt_field_table,field_types[i].name,field_types[i].type);
-#endif
 	};
+
 #if	TEST0
 	char *anon;
 	char *test="testtest";
@@ -1061,7 +1012,7 @@ int main(int argc,char **argp)
 // initialize anonymized directory
 	sprintf(s,"rm -rf %s >/dev/null 2>/dev/null",anon_log_dir);
 	result=system(s);
-	printf("version %s initilize dir %s result=%d\n",version,anon_log_dir,result);
+	printf("version %s initialize dir %s result=%d\n",version,anon_log_dir,result);
 	int max_category=0;
 	char **categories = get_dir(log_dir,&max_category);
 	// for each category!
@@ -1069,10 +1020,10 @@ int main(int argc,char **argp)
 		int max_subtypes=0;
 		sprintf(subtype_dir,"%s/%s/queue",log_dir,categories[category_i]);
 		char **subtypes = get_dir(subtype_dir,&max_subtypes);
-		// printf("# %s -> %s %d subtypes\n",categories[category_i],subtype_dir,max_subtypes);
+//		printf("# %s -> %s %d subtypes\n",categories[i],subtype_dir,subtypes_num);
 #if	1
 		for(int subtype_i=0;subtype_i<max_subtypes;subtype_i++) {
-//			printf("# %s %s\n",categories[i],subtypes[j]);
+//			printf("# %s %s\n",categories[category_i],subtypes[subtype_i]);
 			sprintf(archive_dir,"%s/%s/archive",subtype_dir,subtypes[subtype_i]);
 //			printf(" :  %s\n",archive_dir);
 			sprintf(anon_archive_dir,"%s/%s/queue/%s/archive",anon_log_dir,categories[category_i],subtypes[subtype_i]);
@@ -1134,6 +1085,7 @@ int main(int argc,char **argp)
 		};
 		clear_snames(category_files,max_cat_files);
 #endif
+
 	};
 	return 0;
 }

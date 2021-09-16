@@ -1,7 +1,7 @@
 /*
 		Anonymize logs
 */
-#define	version "c 1.2.1"
+#define	version "c 1.2.2"
 #include <stdio.h>
 #include <stdlib.h>
 // #include <strings.h>
@@ -910,6 +910,9 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 //	printf("anon file: %s\n",fname);
 	in = fopen(fname,"r");
 	out = fopen(out_file,"w+");
+	int count1;
+	for(int i=0;category_fields[i];i++) count1=i;
+	int line=0;
 	while(fgets(in_line,2048,in)) {
 		char last_char=in_line[strlen(in_line)-1];
 		if(last_char<32)
@@ -917,14 +920,14 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 
 		char **out_array;
 		int count=0;
-		int count1=0;
 		out_array = split_str_sarray(in_line,category_sep,&count);
 //		print_sarray(stdout,out_array,category_sep);
 //		printf("allocate %d\n",count);
-
-		for(int i=0;category_fields[i];i++) count1=i;
+		line++;
 		if(count!=count1) {
-			printf(" !!!!!!!!!!!! error in %s count=%d count1=%d last_char=%d\n",fname,count,count1,last_char);
+			printf("line: %d count fields do not match !!!!!!!!!!!! error in %s count=%d count1=%d\n",line,fname,count,count1);
+			printf("category %s subtype %s\n",category,subtype);
+			printf("[%s]\n",in_line);
 			return;
 			// exit(1);
 		};
@@ -943,7 +946,7 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 	long int old_size = t.st_size;
 	stat(out_file,&t);
 	long int new_size = t.st_size;
-	// printf (" > %s oldsize=%ld new_size=%ld\n",file,old_size,new_size);
+	printf (" > %s oldsize = %ld new_size = %ld\n",file,old_size,new_size);
 	
  } else {
  	printf("Skip category %s subtype %s\n",category,subtype);
@@ -1027,7 +1030,7 @@ int main(int argc,char **argp)
 			sprintf(archive_dir,"%s/%s/archive",subtype_dir,subtypes[subtype_i]);
 //			printf(" :  %s\n",archive_dir);
 			sprintf(anon_archive_dir,"%s/%s/queue/%s/archive",anon_log_dir,categories[category_i],subtypes[subtype_i]);
-			printf("# %s -> %s\n",archive_dir,anon_log_dir);
+			printf("# in %s\n",archive_dir);
 			// create dir			
 			sprintf(s,"mkdir -p %s",anon_archive_dir);
 			result=system(s);
@@ -1062,7 +1065,7 @@ int main(int argc,char **argp)
 					for(int done0_i=0;done0_i<done0_max;done0_i++){
 						char done0_name[1024];
 						sprintf(done0_name,"%s/%s",fdname,done0_contents[done0_i]);
-						printf("		- %s\n",done0_name);
+						printf("  - %s\n",done0_name);
 
 						stat(done0_name,&t);
 						if((t.st_mode & S_IFMT) == S_IFDIR){
@@ -1085,7 +1088,7 @@ int main(int argc,char **argp)
 		};
 		clear_snames(category_files,max_cat_files);
 #endif
-
 	};
+	printf("\nDONE %s created !!\n",anon_log_dir);
 	return 0;
 }

@@ -1,5 +1,5 @@
 // go version of anon_logs
-// version 1.2.1
+//
 
 package main
 
@@ -10,6 +10,10 @@ import (
 	"bufio"
 	"strings"
 //	"path/filepath"
+)
+
+const (
+	version = "1.2.3"
 )
 
 const (
@@ -681,7 +685,7 @@ func anonymize_file(from string,file string,out_dir string,category string,subty
 		line++
 		count := len(out_array)
 		if count != count1 { 
-			fmt.Println("line:",line," count fields do not match! ",count,count1, )
+			fmt.Println("line:",line," count fields do not match!!!!! ",count,count1,"in",fname )
 			fmt.Println("category ",category,"subtype=",subtype);
 			fmt.Println(line,scanner.Text(),"]")
 			return
@@ -699,7 +703,12 @@ func anonymize_file(from string,file string,out_dir string,category string,subty
 	fh.Close()
 	datawriter.Flush()
 	out_fh.Close()
-	fmt.Println("	: ",file,"lines",line)
+	fi, _ := os.Stat(fname)
+	old_size := fi.Size()
+	fo, _ := os.Stat(out_file)
+	new_size := fo.Size()
+
+	fmt.Println(" >",file,"oldsize =",old_size,"new_size =",new_size)
 }
 
 var nuse = true
@@ -713,8 +722,7 @@ func anon_done(source_dir string,fname string) {
 		fmt.Println("Cannot create directory ",anon_archive_dir)
 		return;
 	};
-	fmt.Println("	:","->",anon_archive_dir,fname)
-	// anonymize_file(archive_dir,arch.Name(),anon_archive_dir,cat_dir.Name(),subt.Name())
+	// fmt.Println("	:","->",anon_archive_dir,fname)
 	anonymize_file(source_dir,fname,anon_archive_dir,fa[1],fa[2])
 }
 
@@ -730,8 +738,8 @@ func main() {
 	}
 
 	// initialize anonymized directory
-	fmt.Println("Initialize anonymized directory",anon_log_dir);
 	os.RemoveAll(anon_log_dir)
+	fmt.Println("version",version,"initialize dir",anon_log_dir);
 
 	category_files, err := ioutil.ReadDir(log_dir)
 	if err!=nil {
@@ -739,7 +747,7 @@ func main() {
 		return
 	};
 
-	fmt.Println("Listing ",log_dir)
+	// for each category
 	for _, cat_dir := range category_files {
 //		fmt.Println(" ", cat_dir.Name(), cat_dir.IsDir())
 		subtype_dir = log_dir+"/"+cat_dir.Name()+"/queue"
@@ -749,12 +757,11 @@ func main() {
 			fmt.Println("Cannot read subdir ",subtype_dir)
 			return
 		}
-		if(nuse) {
 		for _, subt := range subtypes {
 //			fmt.Println("	- ",subt.Name())
 			archive_dir = subtype_dir+"/"+subt.Name()+"/archive"
 			anon_archive_dir = anon_log_dir+"/"+cat_dir.Name()+"/queue/"+subt.Name()+"/archive"
-			fmt.Println("# ",archive_dir," -> ",anon_archive_dir)
+			fmt.Println("# in",archive_dir)
 			err = os.MkdirAll(anon_archive_dir, 0755)
 			if err != nil {
 				fmt.Println("Cannot create directory ",anon_archive_dir)
@@ -764,7 +771,6 @@ func main() {
 			for _, arch := range archives {
 				anonymize_file(archive_dir,arch.Name(),anon_archive_dir,cat_dir.Name(),subt.Name())
 			}
-		}
 		}
 // *******************************************************
 
@@ -785,14 +791,16 @@ func main() {
 				dname4 := substr(dname,0,4)
 				// fmt.Println(" compare ",dname,"done")
 				if(dname4 == "done") {
-					fmt.Println("done_dir is ",fdname)
+					fmt.Println(" : convert files in",fdname)
 					done0_contents, _ := ioutil.ReadDir(fdname)
 					for _, done0_file := range done0_contents {
 						done0_name := fdname+"/"+done0_file.Name()
 						fileinfo, _ := os.Stat(done0_name)
+						fmt.Println("  -",done0_name)
 						if fileinfo.IsDir() {
-							fmt.Println("	dir=",done0_name)
+							// fmt.Println("	dir=",done0_name)
 							done1_contents,_ := ioutil.ReadDir(done0_name)
+							fmt.Println("    convert files in subdir",done0_name,len(done1_contents),"files")
 							// last done subdir
 							for _, done1_file := range done1_contents {
 								done1_name := done1_file.Name()
@@ -809,4 +817,5 @@ func main() {
 			}
 		}
 	}
+	fmt.Println("\nDONE",anon_log_dir,"created !!")
 }

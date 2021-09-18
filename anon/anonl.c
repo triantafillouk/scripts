@@ -479,7 +479,7 @@ int utf8_ord(unsigned char *str)
 // in_chars -> if not found in @chars then return original string
 const unsigned char *anon_generic (const char *v, const char *chars[], int max,const char *except, int start,const char *ignore_begin,int in_char)
 {
-	static char anon_str[1024];
+	static char anon_str[2048];
 	// int max=0;
 	int salt = DEFAULT_SALT ;
 	anon_str[0]=0;
@@ -613,7 +613,7 @@ const unsigned char *anon_email1(const char *v)
 
 const unsigned char *anon_email(const char *v)
 {
- static char anon_str[1024];
+ static char anon_str[2048];
  long int salt = DEFAULT_SALT;
  int len = strlen(v);
  anon_str[0]=0;
@@ -881,17 +881,17 @@ CAT_DEFINITION categories[] = {
 
 void anonymize_file(char *from,char *file,char *out_dir,char *category,char *subtype)
 {
- char fname[1024];
- char out_file[1024];
+ char fname[2048];
+ char out_file[2048];
 
  char *anon_array[100];
- char anon_data[100][1024];
+ char anon_data[100][2048];
 
  sprintf(fname,"%s/%s",from,file);
  sprintf(out_file,"%s/%s",out_dir,file);
  char *type;
  type = (strcmp(subtype,"default")==0) ? category : subtype;
-// printf("\n-- anonymize: cat=%s subtype=%s type=%s [%s] ------\n",category,subtype,type,out_file);
+ // printf("\n-- anonymize: cat=%s subtype=%s type=%s [%s] ------\n",category,subtype,type,out_file);
  // find subtype fields
  int i=0;
  char **category_fields=NULL;
@@ -900,14 +900,14 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
  	if(!strcmp(categories[i].name,type)){
 		category_fields = categories[i].field;
 		category_sep = categories[i].sep;
-//		printf("	field found!\n");
+		// printf("	field found! %s %d\n",type,i);
 		break;
 	};i++;
  };
  if(category_fields) {
  	char in_line[2048];
 	FILE *in,*out;
-//	printf("anon file: %s\n",fname);
+	// printf("anon file: %s\n",fname);
 	in = fopen(fname,"r");
 	out = fopen(out_file,"w+");
 	int count1;
@@ -915,13 +915,14 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 	int line=0;
 	while(fgets(in_line,2048,in)) {
 		char last_char=in_line[strlen(in_line)-1];
+		// printf("[%s]\n",in_line);
 		if(last_char<32)
 		in_line[strlen(in_line)-1]=0; // remove newline
 
 		char **out_array;
 		int count=0;
 		out_array = split_str_sarray(in_line,category_sep,&count);
-//		print_sarray(stdout,out_array,category_sep);
+		// print_sarray(stdout,out_array,category_sep);
 //		printf("allocate %d\n",count);
 		line++;
 		if(count!=count1) {
@@ -1026,7 +1027,7 @@ int main(int argc,char **argp)
 //		printf("# %s -> %s %d subtypes\n",categories[i],subtype_dir,subtypes_num);
 #if	1
 		for(int subtype_i=0;subtype_i<max_subtypes;subtype_i++) {
-//			printf("# %s %s\n",categories[category_i],subtypes[subtype_i]);
+		printf("# %s %s\n",categories[category_i],subtypes[subtype_i]);
 			sprintf(archive_dir,"%s/%s/archive",subtype_dir,subtypes[subtype_i]);
 //			printf(" :  %s\n",archive_dir);
 			sprintf(anon_archive_dir,"%s/%s/queue/%s/archive",anon_log_dir,categories[category_i],subtypes[subtype_i]);
@@ -1034,7 +1035,7 @@ int main(int argc,char **argp)
 			// create dir			
 			sprintf(s,"mkdir -p %s",anon_archive_dir);
 			result=system(s);
-//			printf(" -> %s\n",anon_archive_dir);
+			printf(" -> %s\n",anon_archive_dir);
 			int max_archive=0;
 			char **archives = get_dir(archive_dir,&max_archive);
 			for(int l=0;l<max_archive;l++) {
@@ -1048,7 +1049,7 @@ int main(int argc,char **argp)
 		sprintf(category_dir,"%s/%s",log_dir,categories[category_i]);
 		int max_cat_files=0;
 		char **category_files = get_dir(category_dir,&max_cat_files);
-		// printf("	check %s %d\n",category_dir,max_cat_files);
+		printf("	check %s %d\n",category_dir,max_cat_files);
 		for(int cat_file_i=0;cat_file_i<max_cat_files;cat_file_i++) {
 			char fdname[1024];
 			sprintf(fdname,"%s/%s",category_dir,category_files[cat_file_i]);

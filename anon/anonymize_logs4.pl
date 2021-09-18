@@ -781,20 +781,6 @@ foreach $category (@categories)
 };
 
 
-#show sample data
-#foreach my $fn (keys %fieldnames_read)
-#{
-#	my $val = $fieldnames_read{$fn};
-#	print "-- $fn -> $val\n";
-#}
-
 print "\nDONE!!\n";
 
 
-#{
-#	my $val = $fieldnames_read{$fn};
-#	print "-- $fn -> $val\n";
-#}
-
-print "\nDONE!!\n";
-ONE!!\n";

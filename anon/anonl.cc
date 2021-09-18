@@ -1,7 +1,7 @@
 /*
 	Anonymize logs
 */
-#define	version "cc_stl 1.2.4"
+#define	version "cc_stl 1.2.5"
 #include <stdio.h>
 #include <stdlib.h>
 // #include <strings.h>
@@ -249,7 +249,7 @@ unsigned const char *anon_anum1(const char *v)
 
 unsigned const char *anon_anum(const char *v)
 {
- static unsigned char anon_str[1024];
+ static unsigned char anon_str[2048];
  long int salt = DEFAULT_SALT;
  int len = strlen(v);
  anon_str[0]=0;
@@ -349,7 +349,7 @@ const unsigned char *anon_idnum1(const char *v)
 
 const unsigned char *anon_idnum(const char *v)
 {
- static char anon_str[1024];
+ static char anon_str[2048];
  long int salt = DEFAULT_SALT;
  int len = strlen(v);
  anon_str[0]=0;
@@ -397,7 +397,7 @@ const unsigned char *anon_idhex1(const char *v)
 
 const unsigned char *anon_idhex(const char *v)
 {
- static char anon_str[1024];
+ static char anon_str[2048];
  long int salt = DEFAULT_SALT;
  int len = strlen(v);
  anon_str[0]=0;
@@ -489,7 +489,7 @@ int utf8_ord(unsigned char *str)
 // in_chars -> if not found in @chars then return original string
 const unsigned char *anon_generic (const char *v, const char *chars[], int max,const char *except, int start,const char *ignore_begin,int in_char)
 {
-	static char anon_str[1024];
+	static char anon_str[2048];
 	// int max=0;
 	int salt = DEFAULT_SALT ;
 	anon_str[0]=0;
@@ -565,7 +565,7 @@ const unsigned char *anon_string1(const char *v)
 // Νομός Αττικής - ΦΥΛΑΚΕΣ ΚΟΡΥΔΑΛΛΟΥ ΑΝΔΡΩΝ (Γ)ΠΤΕΡΥΓΑ ΙΣΟΓΕΙΟ ΑΡΙΣΤΕΡΑ 
 const unsigned char *anon_string(const char *v)
 {
- static char anon_str[1024];
+ static char anon_str[2048];
  long int salt = DEFAULT_SALT;
  anon_str[0]=0;
  long int cc=0;
@@ -623,7 +623,7 @@ const unsigned char *anon_email1(const char *v)
 
 const unsigned char *anon_email(const char *v)
 {
- static char anon_str[1024];
+ static char anon_str[2048];
  long int salt = DEFAULT_SALT;
  int len = strlen(v);
  anon_str[0]=0;
@@ -906,11 +906,11 @@ CAT_DEFINITION categories[] = {
 
 void anonymize_file(char *from,char *file,char *out_dir,char *category,char *subtype)
 {
- char fname[1024];
- char out_file[1024];
+ char fname[2048];
+ char out_file[2048];
 
  char *anon_array[100];
- char anon_data[100][1024];
+ char anon_data[100][2048];
 
  sprintf(fname,"%s/%s",from,file);
  sprintf(out_file,"%s/%s",out_dir,file);
@@ -980,7 +980,7 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 
 void anon_done(char *source_dir,char *fname)
 {
- char anon_archive_dir[1024];
+ char anon_archive_dir[2048];
  int count;
  int result;
  char command[1024];
@@ -996,7 +996,7 @@ void anon_done(char *source_dir,char *fname)
 char subtype_dir[1024];
 char archive_dir[1024];
 char anon_archive_dir[1024];
-char s[1024];
+char s[2048];
 
 const char *test1 = "20200101020400|KT_Trs.2020-01-01.csv|20200102010001|4229827|20190904000000|20210701235959|2531073127|Νομός Ροδόπης - ΚΡΑΤΗΤΗΡΙΑ, ΑΣΤΥΝΟΜΙΑ, ΛΕΣΧΗ, ΚΟΜΟΤΗΝΗ|6975694249|140|3.6|0.2|0508943966";
 

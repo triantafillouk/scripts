@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	version = "1.2.3"
+	version = "1.3.1"
 )
 
 const (
@@ -50,7 +50,8 @@ type CAT_DEFINITION struct {
 }
 
 
-var num_digits = []int {'0','1','2','3','4','5','6','7','8','9'};
+var num_digits = []int {'0','1','2','3','4','5','6','7','8','9' }
+var rand_digits = []int {'5','8','6','4','7','9','3','2','0','1' }
 var hex_digits = []int {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 var anum_digits = []int { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 var unum_digits = []int { 
@@ -250,7 +251,8 @@ func anon_anum (f string) string {
 }
 
 func anon_phone1 (f string) string {
-	return anon_generic(f,num_digits,"",0,"06",1)
+	return arand_digits(f,0)
+	// return anon_generic(f,num_digits,"",0,"06",1)
 }
 
 func anon_phone (f string) string {
@@ -353,6 +355,23 @@ func contains(l int,array []int) bool {
 	}
 	return false
 }
+
+
+func arand_digits(v string, start int) string {
+ var sarray = []rune(v)
+ // var flen = len(sarray)
+
+ for i,l := range sarray {
+ 	if(l<'0' || l>'9') {
+		// fmt.Println("no digit! ",v)
+		return v
+	}
+ 	sarray[i] = rune(rand_digits[l-'0'])
+ }
+ s:= string(sarray[:])
+ return s
+}
+
 
 // v -> input string
 // chars -> array with output chars
@@ -731,6 +750,11 @@ func main() {
 //	l := anon_ustring(in)
 //	fmt.Println("in [",in,"] -> [",l)
 //	return
+
+	n1 := "0123456789"
+	n2 := arand_digits(n1,0)
+	fmt.Println("in ",n1,"->",n2)
+
 //	create the btree table
 	bt_field_table = make(map[string]int)
 	for _,f := range field_types {

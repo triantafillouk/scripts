@@ -22,7 +22,6 @@ my $anon_archive_dir;
 my $default_salt=23;	## a random value!
 my @num_digits = ('0','1','2','3','4','5','6','7','8','9');
 my @rand_digits = ('5','8','6','4','7','9','3','2','0','1');
-my @rand_digit = ('5','2','0','9','6','3','1','8','4','5');
 my @hex_digits = ('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 my @unum_digits = ('0','1','2','3','4','5','6','7','8','9',
 	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
@@ -1015,10 +1014,10 @@ if($test==1) {
 	exit;
 };
 
-my $r0="91234567890";
-my $r=anon_phone1($r0);
-print "anon_phone1 [$r0] -> [$r]\n";
-exit
+# my $r0="91234567890";
+# my $r=anon_phone1($r0);
+# print "anon_phone1 [$r0] -> [$r]\n";
+# sexit
 # initialize anonymized directory
 print "Version $app_version Initialize anonymized directory $anon_log_dir\n";
 `rm -rf $anon_log_dir`;

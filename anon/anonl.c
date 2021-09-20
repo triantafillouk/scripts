@@ -42,6 +42,7 @@ enum {
 #define	false	0
 
 const unsigned char *anon_generic (const char *v, const char *chars[], int max, const char *except, int start,const char *ignore_begin,int in_char);
+const unsigned char *arand_digits (const char *v, int start);
 
 typedef struct FIELD_TYPE
 {
@@ -56,6 +57,7 @@ typedef struct CAT_DEFINITION {
 } CAT_DEFINITION;
 
 int num_digits[] = {'0','1','2','3','4','5','6','7','8','9',0};
+int rand_digits[] = {'5','8','6','4','7','9','3','2','0','1',0};
 int hex_digits[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F',0};
 int anum_digits[] = {
 	'0','1','2','3','4','5','6','7','8','9',
@@ -280,7 +282,8 @@ unsigned const char *anon_anum(const char *v)
 
 unsigned const char *anon_phone1(const char *v)
 {
-	return anon_generic(v,cnum_digits,MAX_NUM_DIGITS,"",0,"06",1);
+	return arand_digits(v,4);
+	// return anon_generic(v,cnum_digits,MAX_NUM_DIGITS,"",0,"06",1);
 }
 
 const unsigned char *anon_phone(const char *v)
@@ -470,6 +473,32 @@ int utf8_ord(unsigned char *str)
  return (ch1-0xF0)*64*0x1000+(ch2-0x80)*0x1000+(ch3-0x80)*64+ch4%0x40;
 }
 
+// anonymize digits randomly ?
+const unsigned char *arand_digits (const char *v, int start)
+{
+	static unsigned char anon_str[2048];
+
+	anon_str[0]=0;
+	unsigned char *uv=(unsigned char *)v;
+	if(v==0) return anon_str;
+	int pos=0;
+	unsigned int l=0;
+
+	for(pos=0;uv[pos]!=0;pos++)
+	{
+		l=uv[pos];
+		if(l<'0' || l>'9') {
+			return uv;
+		};
+		if(pos>=start) {
+			anon_str[pos]=rand_digits[l-'0'];
+		} else {
+			anon_str[pos]=l;
+		};
+	};anon_str[pos]=0;
+	// printf("> %s -> %s\n",v,anon_str);
+	return (unsigned char *)anon_str;
+}
 
 // v -> input string
 // chars -> array with output chars
@@ -947,7 +976,7 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 	long int old_size = t.st_size;
 	stat(out_file,&t);
 	long int new_size = t.st_size;
-	printf (" > %s oldsize = %ld new_size = %ld\n",file,old_size,new_size);
+	printf (" > %s size = %ld -> %ld\n",file,old_size,new_size);
 	
  } else {
  	printf("Skip category %s subtype %s\n",category,subtype);

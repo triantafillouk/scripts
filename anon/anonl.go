@@ -251,7 +251,7 @@ func anon_anum (f string) string {
 }
 
 func anon_phone1 (f string) string {
-	return arand_digits(f,0)
+	return arand_digits(f,4)
 	// return anon_generic(f,num_digits,"",0,"06",1)
 }
 
@@ -359,14 +359,15 @@ func contains(l int,array []int) bool {
 
 func arand_digits(v string, start int) string {
  var sarray = []rune(v)
- // var flen = len(sarray)
 
- for i,l := range sarray {
+ for pos,l := range sarray {
  	if(l<'0' || l>'9') {
 		// fmt.Println("no digit! ",v)
 		return v
 	}
- 	sarray[i] = rune(rand_digits[l-'0'])
+	if(pos>=start) {
+ 		sarray[pos] = rune(rand_digits[l-'0'])
+	}
  }
  s:= string(sarray[:])
  return s
@@ -727,7 +728,7 @@ func anonymize_file(from string,file string,out_dir string,category string,subty
 	fo, _ := os.Stat(out_file)
 	new_size := fo.Size()
 
-	fmt.Println(" >",file,"oldsize =",old_size,"new_size =",new_size)
+	fmt.Println(" >",file,"size =",old_size,"->",new_size)
 }
 
 var nuse = true
@@ -751,9 +752,9 @@ func main() {
 //	fmt.Println("in [",in,"] -> [",l)
 //	return
 
-	n1 := "0123456789"
-	n2 := arand_digits(n1,0)
-	fmt.Println("in ",n1,"->",n2)
+	// n1 := "0123456789"
+	// n2 := arand_digits(n1,0)
+	// fmt.Println("in ",n1,"->",n2)
 
 //	create the btree table
 	bt_field_table = make(map[string]int)

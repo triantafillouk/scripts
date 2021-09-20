@@ -21,6 +21,7 @@ BTREE *bt_field_table;
 #endif
 
 #define TEST	1
+#define USE_GENERIC	1
 
 const char *log_dir = "logs";
 #if	USE_STL
@@ -53,6 +54,7 @@ enum {
 #define	MAX_UNUM_DIGITS 60
 
 const unsigned char *anon_generic (const char *v, const char *chars[], int max, const char *except, int start,const char *ignore_begin,int in_char);
+const unsigned char *arand_digits (const char *v, int start);
 
 typedef struct FIELD_TYPE
 {
@@ -68,6 +70,7 @@ typedef struct CAT_DEFINITION {
 
 
 int num_digits[] = {'0','1','2','3','4','5','6','7','8','9',0};
+int rand_digits[] = {'5','8','6','4','7','9','3','2','0','1',0};
 int hex_digits[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F',0};
 int anum_digits[] = {
 	'0','1','2','3','4','5','6','7','8','9',
@@ -173,8 +176,8 @@ FIELD_TYPE field_types[] = {
 {"outgoingproduct"		, T_NONE  },	// IPTL
 {"datavolume"			, T_NONE  },	// 
 {"dataunit"				, T_NONE  },	// 
-{"usersummarisation"	, T_STRING  },	// 
-{"udcsreserved"			, T_NONE  },	// 
+{"usersummarisation"	, T_ANUM  },	// 
+{"udcsreserved"			, T_STRING  },	// 
 {"product"				, T_NONE  },	// 00001 149-Αμεση συνδιάλεξη
 {"username"				, T_EMAIL },	// isgo56@otenet.gr
 {"acct_status_type"		, T_NONE  },	// Interim-Update
@@ -290,7 +293,8 @@ unsigned const char *anon_anum(const char *v)
 
 unsigned const char *anon_phone1(const char *v)
 {
-	return anon_generic(v,cnum_digits,MAX_NUM_DIGITS,"",0,"06",1);
+	return arand_digits(v,4);
+	// return anon_generic(v,cnum_digits,MAX_NUM_DIGITS,"",0,"06",1);
 }
 
 const unsigned char *anon_phone(const char *v)
@@ -480,13 +484,33 @@ int utf8_ord(unsigned char *str)
  return (ch1-0xF0)*64*0x1000+(ch2-0x80)*0x1000+(ch3-0x80)*64+ch4%0x40;
 }
 
+// anonymize digits randomly ?
+const unsigned char *arand_digits (const char *v, int start)
+{
+	static unsigned char anon_str[2048];
 
-// v -> input string
-// chars -> array with output chars
-// exept -> string with chars to not convert
-// start -> start convert from this position
-// ignore_begin -> string with chars that do not convert at the beginning of the line
-// in_chars -> if not found in @chars then return original string
+	anon_str[0]=0;
+	unsigned char *uv=(unsigned char *)v;
+	if(v==0) return anon_str;
+	int pos=0;
+	unsigned int l=0;
+
+	for(pos=0;uv[pos]!=0;pos++)
+	{
+		l=uv[pos];
+		if(l<'0' || l>'9') {
+			return uv;
+		};
+		if(pos>=start) {
+			anon_str[pos]=rand_digits[l-'0'];
+		} else {
+			anon_str[pos]=l;
+		};
+	};anon_str[pos]=0;
+	// printf("> %s -> %s\n",v,anon_str);
+	return (unsigned char *)anon_str;
+}
+
 const unsigned char *anon_generic (const char *v, const char *chars[], int max,const char *except, int start,const char *ignore_begin,int in_char)
 {
 	static char anon_str[2048];
@@ -732,7 +756,7 @@ const char *anonymize_field(char *f,const char *field_name)
 	switch(type) {
 		case T_NONE:	return anon_none(f);
 		case T_STRING:	return anon_anum(f);
-		case T_PHONE:	return anon_phone(f);
+		case T_PHONE:	return anon_phone1(f);
 		case T_EMAIL:	return anon_email(f);
 		case T_ANUM:	return anon_anum(f);
 		case T_IDHEX:	return anon_idhex(f);
@@ -971,7 +995,7 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 	long int old_size = t.st_size;
 	stat(out_file,&t);
 	long int new_size = t.st_size;
-	printf (" > %s oldsize = %ld new_size = %ld\n",file,old_size,new_size);
+	printf (" > %s size = %ld -> %ld\n",file,old_size,new_size);
 	
  } else {
  	printf("Skip category %s subtype %s\n",category,subtype);
@@ -1009,9 +1033,8 @@ int main(int argc,char **argp)
 	// exit(0);
 #if	0
 	const unsigned char *res;
-	const char *inp="00698237";
-	res = anon_phone(inp);
-	printf("[%s] -> [%s]\n",inp,res);
+	// const char *inp="012345678901234567890";
+	const char *inp="000061297446984";
 	res = anon_phone1(inp);
 	printf("[%s] -> [%s]\n",inp,res);
 	exit(0);

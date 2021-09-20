@@ -46,7 +46,7 @@ sub anon_string1 ($)
 
 sub anon_phone1 ($)
 {
-	return rand_digits($_[0],4);
+	return arand_digits($_[0],4);
 	# return anon_generic($_[0],\@num_digits,"",0,"06",1);
 }
 
@@ -593,7 +593,7 @@ sub anon_email($)
 }
 
 
-sub rand_digits($$)
+sub arand_digits($$)
 {
  my ($v,$start) = @_;
  my @b = split('',$v);
@@ -601,6 +601,7 @@ sub rand_digits($$)
  my $pos=0;
  my $l;
  foreach $l (@b) {
+	if($l lt '0' or $l gt '9') { return $v;};
 	if($pos >= $start){
 		my $ind = $l-'0';
 		@b[$pos]=@rand_digits[$ind];
@@ -943,7 +944,7 @@ sub anonymize_file($$$$$)
 	close FOUT;
 
 	my $new_size = -s $out_file;
-	print " > $file oldsize = $oldsize new_size = $new_size\n";
+	print " > $file size = $oldsize -> $new_size\n";
  } else {
  	print "		skipping anonymize $type $subtype\n";
  };
@@ -1014,10 +1015,10 @@ if($test==1) {
 	exit;
 };
 
-# my $r0="91234567890";
+# my $r0="000061297446984";
 # my $r=anon_phone1($r0);
 # print "anon_phone1 [$r0] -> [$r]\n";
-# sexit
+# exit
 # initialize anonymized directory
 print "Version $app_version Initialize anonymized directory $anon_log_dir\n";
 `rm -rf $anon_log_dir`;

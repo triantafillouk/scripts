@@ -1,7 +1,7 @@
 /*
 		Anonymize logs
 */
-#define	version "c 1.2.2"
+#define	version "c 1.3.2"
 #include <stdio.h>
 #include <stdlib.h>
 // #include <strings.h>

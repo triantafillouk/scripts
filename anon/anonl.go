@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	version = "1.3.1"
+	version = "1.3.2"
 )
 
 const (
@@ -217,134 +217,13 @@ func anon_anum1 (f string) string {
 	return anon_generic(f,anum_digits,".@?:",0,"",0)
 }
 
-func anon_anum (f string) string {
-	var salt int = DEFAULT_SALT 
-	var len = len(f)
-	var sarray = []byte(f)
-	var cc int = 0
-	var key int = int(sarray[len-1]+17-48)
-	for _,l := range sarray {
-		salt += int(l)
-	}
-	// fmt.Println("anon_idnum: f=",f," salt0=",salt," k=",key);
-	for i,l := range sarray {
-		var ll int = int(l)
-//		fmt.Println("	",i," l=",l)
-	 	if(l=='.' || l=='@' || l=='?' || l==':') {
-			
-		} else {
-			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-			var val int = ((key % 177)-cc)%177
-			for val<0 { val += MAX_ANUM_DIGITS }
-			cc=val
-			salt++
-			if( salt >= 20857) {
-				salt=0
-			}
-			key = key + key + (cc ^ ll) + salt
-			sarray[i] = byte(anum_digits[ cc % MAX_ANUM_DIGITS])
-		}
-	};
-	s:= string(sarray[:])
-	// fmt.Println("	>",s)
-	return s
-}
-
 func anon_phone1 (f string) string {
 	return arand_digits(f,4)
 	// return anon_generic(f,num_digits,"",0,"06",1)
 }
 
-func anon_phone (f string) string {
-	var salt int = DEFAULT_SALT 
-	var start int = 1
-	var cc int = 0
-	var val = 0
-	if f == "DUMMY" { 
-		return f
-	}
-	var sarray = []rune(f)
-	var len = len(f)
-	var key int = int(sarray[len-1]+17-48)
-
-	for _,l := range sarray {
-		salt += int(l)
-	}
-//	fmt.Println(" > salt=",salt,"k0=",key)
-	for i,l := range sarray {
-		var ll int = int(l)
-//		fmt.Println("	",i," l=",l)
-		if l>'9' || l<'0' {
-//			fmt.Println(" > ",f)
-			return f
-		}
-		if((l=='0' ||l=='6') && start==1) {
-			sarray[i]=l
-		} else {
-//			fmt.Println(" -: v=",val,",ol=",l,",k=",key,",cc=",cc);
-			start=0
-			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-			val = ((key % 177)-cc)%177
-			for val<0 { val += MAX_NUM_DIGITS }
-			cc=val
-			salt++
-			if( salt >= 20857) {
-				salt=0
-			}
-			key = key + key + (cc ^ ll) + salt
-			sarray[i] = rune(num_digits[ cc % MAX_NUM_DIGITS])
-		}
-	};
-	s:= string(sarray[:])
-//	fmt.Println(s)
-	return s
-}
-
-
-
 func anon_ustring1 (f string) string {
 	return anon_generic(f,unum_digits,".@/",0,"",0)
-}
-
-func anon_ustring (f string) string {
-	var salt int = DEFAULT_SALT 
-	var sarray = []rune(f)
-	var flen = len(sarray)
-	var cc int = 0
-	var val int = 0
-//	var l0 = sarray[flen-1]
-//	fmt.Println("len=",flen," l0=",int(l0))
-	var key int = int(sarray[flen-1])+17-48
-	for _,l := range sarray {
-		salt += int(l)
-//		fmt.Println(" ",i,"v=",int(l),"salt=",salt)
-	}
-//	fmt.Println(" > len=",flen,",salt=",salt,"k0=",key)
-	for i,l := range sarray {
-		var ll int = int(l)
-//		fmt.Println(" ",l,"->",ll)
-	 	if( l == '.' || l=='@' || l=='/'){
-//			fmt.Println("skip ",l);
-			sarray[i]=l;
-		} else {
-			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-			val = ((key % 177)-cc)%177
-			for val<0 { val += MAX_UNUM_DIGITS }
-			cc=val
-			salt++
-			if( salt >= 20857) {
-				salt=0
-			}
-			key = key + key + (cc ^ ll) + salt
-			// l = rune(unum_digits[ cc % MAX_UNUM_DIGITS])
-			// fmt.Println(i,l,unum_digits[ cc % MAX_UNUM_DIGITS],unum_digits[ cc % MAX_UNUM_DIGITS])
-			sarray[i] = rune(unum_digits[ cc % MAX_UNUM_DIGITS])
-			
-		}
-	};
-	s:= string(sarray[:])
-//	fmt.Println(s)
-	return s
 }
 
 func contains(l int,array []int) bool {
@@ -355,7 +234,6 @@ func contains(l int,array []int) bool {
 	}
 	return false
 }
-
 
 func arand_digits(v string, start int) string {
  var sarray = []rune(v)
@@ -442,76 +320,9 @@ func anon_email1 (f string) string {
 	return anon_generic(f,anum_digits,"@.",0,"",0)
 }
 
-func anon_email (f string) string {
-	var salt int = DEFAULT_SALT 
-	var len = len(f)
-	var sarray = []byte(f)
-	var cc int = 0
-	var key int = int(sarray[len-1]+17-48)
-	for _,l := range sarray {
-		salt += int(l)
-	}
-//	fmt.Println("anon_idnum: f=",f," salt0=",salt," k=",key);
-	for i,l := range sarray {
-		var ll int = int(l)
-//		fmt.Println("	",i," l=",l)
-	 	if(l=='.' || l=='@' ) {
-			
-		} else {
-			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-			var val int = ((key % 177)-cc)%177
-			for val<0 { val += MAX_ANUM_DIGITS }
-			cc=val
-			salt++
-			if( salt >= 20857) {
-				salt=0
-			}
-			key = key + key + (cc ^ ll) + salt
-			sarray[i] = byte(anum_digits[ cc % MAX_ANUM_DIGITS])
-		}
-	};
-	s:= string(sarray[:])
-//	fmt.Println(s)
-	return s
-}
 
 func anon_idnum1 (f string) string {
 	return anon_generic(f,num_digits,"",0,"0",1)
-}
-
-func anon_idnum (f string) string {
-	var salt int = DEFAULT_SALT 
-	var len = len(f)
-	var sarray = []byte(f)
-	var start int = 1
-	var cc int = 0
-	var key int = int(sarray[len-1]+17-48)
-	for _,l := range sarray {
-		salt += int(l)
-	}
-//	fmt.Println("anon_idnum: f=",f," salt0=",salt," k=",key);
-	for i,l := range sarray {
-		var ll int = int(l)
-//		fmt.Println("	",i," l=",l)
-		if(l=='0' && start==1) {
-			
-		} else {
-			start=0
-			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-			var val int = ((key % 177)-cc)%177
-			for val<0 { val += MAX_NUM_DIGITS }
-			cc=val
-			salt++
-			if( salt >= 20857) {
-				salt=0
-			}
-			key = key + key + (cc ^ ll) + salt
-			sarray[i] = byte(num_digits[ cc % MAX_NUM_DIGITS])
-		}
-	};
-	s:= string(sarray[:])
-//	fmt.Println(s)
-	return s
 }
 
 func anon_ipv4 (f string) string {
@@ -524,41 +335,6 @@ func anon_ipv6 (f string) string {
 
 func anon_idhex1 (f string) string {
 	return anon_generic(f,hex_digits,"",0,"0",0)
-}
-
-func anon_idhex (f string) string {
-	var salt int = DEFAULT_SALT 
-	var len = len(f)
-	var sarray = []byte(f)
-	var start int = 1
-	var cc int = 0
-	var key int = int(sarray[len-1]+17-48)
-	for _,l := range sarray {
-		salt += int(l)
-	}
-//	fmt.Println("anon_idnum: f=",f," salt0=",salt," k=",key);
-	for i,l := range sarray {
-		var ll int = int(l)
-//		fmt.Println("	",i," l=",l)
-		if(l=='0' && start==1) {
-			
-		} else {
-			start=0
-			key = ll + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
-			var val int = ((key % 177)-cc)%177
-			for val<0 { val += MAX_HEX_DIGITS }
-			cc=val
-			salt++
-			if( salt >= 20857) {
-				salt=0
-			}
-			key = key + key + (cc ^ ll) + salt
-			sarray[i] = byte(hex_digits[ cc % MAX_HEX_DIGITS])
-		}
-	};
-	s:= string(sarray[:])
-//	fmt.Println(s)
-	return s
 }
 
 func crypt_domain (f string) string {
@@ -581,7 +357,7 @@ func substr(input string, start int, length int) string {
 
 var anon_function = []func(string) string {
 	anon_none,
-	anon_anum,
+	anon_anum1,
 	anon_phone1,
 	anon_ustring1,
 	anon_email1,
@@ -748,7 +524,7 @@ func anon_done(source_dir string,fname string) {
 
 func main() {
 //	in := "This is ’ελληνικά γράμματα’"
-//	l := anon_ustring(in)
+//	l := anon_ustring1(in)
 //	fmt.Println("in [",in,"] -> [",l)
 //	return
 

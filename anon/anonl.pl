@@ -9,7 +9,7 @@ use integer;
 # use Digest::MD4 qw(md4 md4_hex md4_base64);
 binmode(STDOUT, "encoding(UTF-8)");
 
-my $app_version = "1.3.1";
+my $app_version = "1.3.2";
 my $log_dir = "logs";
 my $anon_log_dir = "anonymous_logs2";
 my $category;
@@ -40,7 +40,6 @@ sub anon_none($)
 sub anon_string1 ($)
 {
  # my @args1 = ( \@unum_digits,".@/",0,"",0 );
- # return anon_generic1($_[0],\@args1);
 	return anon_generic($_[0],\@unum_digits,".@/",0,"",0);
 }
 
@@ -76,154 +75,52 @@ sub anon_anum1($)
 	return anon_anum($_[0]);
 }
 
+# encypt alphanumeric string
+sub anon_anum($)
+{
+ my $v = $_[0];
 
-my %field_funcs = (
-ts						=> \&anon_none,	# 20200103123507
-src_filename			=> \&anon_none,	# R_ALEXADRAS01B.0476.2001031251
-src_filedate			=> \&anon_none,	# 20191231005959
-src_filesize			=> \&anon_none,	# 5839
-duration				=> \&anon_none,	# 0001:02:16, 0000:33:45 or 33 (telecard)
-calling					=> \&anon_phone,	# 2661047456, 2810242384
-called					=> \&anon_phone,	# 0017183198803, 00972505228370
-servicenumber			=> \&anon_none,	# 8071122
-chronocard_id			=> \&anon_idnum,	# 0000000001673709
-balanceafter			=> \&anon_none,	# 000002915048
-balanceconsumed			=> \&anon_none,	# 000001391230
-expirationoffset		=> \&anon_none,	# 00000183
-recseparator			=> \&anon_none,	# 
-parsed					=> \&anon_none,	# 8,9 or 2 or 11, 15 ...
-service					=> \&anon_none,	# 0
-prefix					=> \&anon_none,	# 16032
-number					=> \&anon_phone,	# 00171########, 69########, 13888
-logfile_line			=> \&anon_none,	# 1234
-mailserver_name			=> \&anon_none,	# pop03, rigel
-mailserver_type			=> \&anon_none,	# dovecot, amavis, postfix-smtpd ..
-queue					=> \&anon_none,	# F40D81D0008C (hex number)
-session					=> \&anon_none,	# d60EqHemurbDqgAq
-message_id				=> \&anon_ustring,	# 3d9c2dc4-974a-4a9f-b6b1-22be8164481e_ebd4bd83-cd01-4832-bd87-5397606fcf28_20200525112519@brandsgalaxy.gr
-resent_message_id		=> \&anon_ustring,	# 
-sender					=> \&anon_email,	# notification@facebookmail.com
-receiver				=> \&anon_email,	# vm1977@otenet.gr
-user					=> \&anon_email,	# empty, xxxxx@xxx.com
-status					=> \&anon_none,	# blank | sent | removed | bounced |defered |expired
-domain_not_found		=> \&anon_none,	# Recipient address rejected | sender address rejected
-helo					=> \&anon_domain,	# ip or domain name or blank
-ctladdr					=> \&anon_email,	# username | email
-orig_to					=> \&anon_email,	# 
-sasl_sender				=> \&anon_email,	#
-remote_ip				=> \&anon_ipv4,	#
-content_ifnot_queue		=> \&anon_ustring, # lmtp(xxxx@otenet.gr) | (03908-22) Passed {CLEAN|BADHEADER} (it might have commas!)
-subscriber_type			=> \&anon_none,	# 0
-imei					=> \&anon_idnum,	# 353420100443370
-imsi					=> \&anon_idnum,	# 208201402275281
-calling_number			=> \&anon_phone,	# 0033663139639
-ipaddress				=> \&anon_ipv4,	# 
-called_number			=> \&anon_phone,	# 00302120001535
-hc_network				=> \&anon_none,	# 274
-ext_carrier				=> \&anon_none,	# 30971388006
-serving_vplmn			=> \&anon_none,	# 0A180DE7
-request_time			=> \&anon_none,	# 
-start_time				=> \&anon_none,	# 20200103123507 (year,month,day,hour,min,sec)
-end_time				=> \&anon_none,	# 20200103124052 (year,month,day,hour,min,sec)
-call_duration			=> \&anon_none,	# 345 (seconds)
-time_shift				=> \&anon_none,	# 10800
-service_el_tp			=> \&anon_none,	# 3G
-service_el_id			=> \&anon_none,	# ALEXADRAS01B
-first_cell				=> \&anon_none,	# 202010300304553
-dest_zone				=> \&anon_none,	# 597
-call_flag				=> \&anon_none,	# O
-service_qual			=> \&anon_none,	# NAP
-record_id				=> \&anon_none,	# 75571013
-session_scn				=> \&anon_none,	# 209734471
-service_scn				=> \&anon_none,	# 04760000
-service_id				=> \&anon_none,	# 11
-service_mode			=> \&anon_none,	# Foreign_Relay
-service_class			=> \&anon_none,	# 0 or wireless.twilio.com
-service_type			=> \&anon_none,	# 0
-service_prov_id			=> \&anon_none,	# Foreign_Relay
-content_size			=> \&anon_none,	# 131233
-content_size_upl		=> \&anon_none,	# 
-content_size_dnl		=> \&anon_none,	#
-service_status			=> \&anon_none,	# S
-cdr_type				=> \&anon_none,	# 1,9
-termination_ind			=> \&anon_none,	# C | 17
-charge					=> \&anon_none,	# 117474
-last_cell				=> \&anon_none,	# 202010300304553
-master_msisdn			=> \&anon_none,	# 
-incomingswitchid		=> \&anon_none,	# TKO,82
-outgoingswitchid		=> \&anon_none,	# 82
-recordcallid			=> \&anon_none,	# 011270006737657
-linkfield				=> \&anon_none,	# 01
-a_number				=> \&anon_phone,	# 69XXXXXXXX
-b_number				=> \&anon_phone,	# 13888, 69XXXXXXXX
-incomingtrunk			=> \&anon_none,	# COTKO1I
-outgoingtrunk			=> \&anon_none,	# 1104_COSMOTE_ATH
-incomingproduct			=> \&anon_none,	# HLP, IPTL
-outgoingproduct			=> \&anon_none,	# IPTL
-datavolume				=> \&anon_none,	# 
-dataunit				=> \&anon_none,	# 
-usersummarisation		=> \&anon_anum,# 
-udcsreserved			=> \&anon_ustring,	# 
-product					=> \&anon_none,	# 00001 149-Αμεση συνδιάλεξη
-username				=> \&anon_email,	# isgo56@otenet.gr
-acct_status_type		=> \&anon_none,	# Interim-Update
-acct_session_time		=> \&anon_none,	# 0
-acct_unique_session_id	=> \&anon_idhex,	# 1cdf65221e6c8b1b
-framed_ip_address		=> \&anon_ipv4,	# 100.68.219.0
-nas_port_type			=> \&anon_none,	# Wireless-XGP
-nas_port_id				=> \&anon_none,	# #KERKY_SPARTYLA_D_HUA_11986 atm 0/2/0/27:8.35#
-calling_station_id		=> \&anon_anum,	# 0 0/0/36.3223 # KERKY_SPARTYLA_D_HUA_11986 atm 0/2/0/27:8.35
-nas_ip_address			=> \&anon_ipv4,	# 79.128.219.74
-port_parsed				=> \&anon_none,	# IGNORED
-port_detail				=> \&anon_none,	#
-delegated_ipv6_prefix	=> \&anon_ipv6,	# 2a02:587:b483:8d00::/56
-haap_lte_ipv4			=> \&anon_ipv4,	#
-haap_dsl_ipv4			=> \&anon_ipv4,	#
-ishybrid				=> \&anon_none,	# false
-validity_date_start		=> \&anon_none,	# 20171110000000
-validity_date_end		=> \&anon_none,	# 20190930235959
-calling_address			=> \&anon_ustring,# Νομός Ηρακλείου - ΑΕΡΟΛΙΜΗΝ ΗΡΑΚΛΕΙΟΥ
-card_balance_contained	=> \&anon_none,	# 3.36
-card_balance_consumed	=> \&anon_none,	# 0.28
-card_number				=> \&anon_idnum,	# 0507974295
-version					=> \&anon_none,	# 10
-seqnum					=> \&anon_none,	# 100000955753943
-networkid				=> \&anon_none,	# 03
-eventclass				=> \&anon_none,	# 001
-networkprod				=> \&anon_none,	# 00001
-action					=> \&anon_none,	# 01
-eventsourceid			=> \&anon_none,	# INAYKTH,IMS
-ndr						=> \&anon_phone,	# 6948457396
-aaddrplan				=> \&anon_none,	# 1
-nde						=> \&anon_phone,	# 2351028148
-baddrplan				=> \&anon_none,	# 1
-newdest					=> \&anon_phone,	# 2351028148
-newdaddrplan			=> \&anon_none,	# 1
-chargedparty			=> \&anon_none,	# U
-date					=> \&anon_none,	# 20200101
-starttime				=> \&anon_none,	# 063154
-duratunit				=> \&anon_none,	# 1
-secondunit				=> \&anon_none,	# 7
-amountofsus				=> \&anon_none,	# 000000000000000
-acategory				=> \&anon_none,	# 00
-priority				=> \&anon_none,	# 00
-numsuppserv				=> \&anon_none,	# 0
-suppserv1				=> \&anon_none,	# 000
-suppserv2				=> \&anon_none,	# 000
-suppserv3				=> \&anon_none,	# 7
-suppserv4				=> \&anon_none,	# 5900
-suppserv5				=> \&anon_none,	# 01
-suppserv6				=> \&anon_none,	# 000
-suppserv7				=> \&anon_none,	# 000
-suppserv8				=> \&anon_none,	# 000
-numgroups				=> \&anon_none,	# 00
-origcellid				=> \&anon_none,	# 000464
-callid					=> \&anon_idnum,	# 0753665600
-callid_hex				=> \&anon_idhex,	# 0753665600
-inowner					=> \&anon_none,	# 2351028148
-misc					=> \&anon_none,	# 00000000
-reserved				=> \&anon_ustring,# 
-);
+ my $cc=0;
+ my $salt = $default_salt;
+ my @b = split('',$v);
+ my $len = scalar @b;
+ my $key  = ord(@b[$len-1])+17-48;	
+ my $val=0;
+ my $i=0;
+ my $l;
+ # randomize salt
+	foreach $l (@b) {
+		$salt += ord($l);
+	};
+	# print " > salt=$salt k0=$key\n";
+	foreach $l (@b) {	
+		if($l eq '.' or $l eq '@' or $l eq '?' or $l eq ':') {
+			@b[$i] = $l;
+		} else {
+		my $ol=ord($l);
+		my $ool = $cc ^ $ol;
+		# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
+		$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
+		# print "  : k2=$key ";
+		$val = ( ($key % 177)-$cc) % 177 ;
+		# print " , v=$val ";
+		while($val<0) { $val += 36;};
+		$cc = $val;
+		
+		if (++$salt >= 20857) {
+			$salt = 0;
+		}
+		# print " val=$val cc=$cc salt=$salt";
+		$key = $key + $key + ( $cc ^ $ol) + $salt;
+		# print " k2=$key\n";
+		@b[$i] = @anum_digits[$cc % 36];
+		};
+		$i++;
+	};
+	my $anon_str = join('',@b);
+	# print "> $v -> $anon_str\n";
+	return $anon_str;
+}
 
 my %field_funcs_gen = (
 ts						=> \&anon_none,	# 20200103123507
@@ -310,7 +207,7 @@ incomingproduct			=> \&anon_none,	# HLP, IPTL
 outgoingproduct			=> \&anon_none,	# IPTL
 datavolume				=> \&anon_none,	# 
 dataunit				=> \&anon_none,	# 
-usersummarisation		=> \&anon_anum,# 
+usersummarisation		=> \&anon_anum1,# 
 udcsreserved			=> \&anon_string1,	# 
 product					=> \&anon_none,	# 00001 149-Αμεση συνδιάλεξη
 username				=> \&anon_email1,	# isgo56@otenet.gr
@@ -399,200 +296,6 @@ my %categories_config = (
 );
 
 
-# encrypt number
-sub anon_idnum($)
-{
- my $v = $_[0];
-
- my $cc=0;
- my $salt = $default_salt;
- my @b = split('',$v);
- my $len = scalar @b;
- my $key  = int(@b[$len-1])+17;	
- my $val=0;
- my $i=0;
- my $l;
-	foreach $l (@b) {
-		$salt += ord($l);
-	};
-	# print " > salt=$salt k0=$key\n";
-	my $start=1;
-	foreach $l (@b) {	
-		if($l eq '0' and $start==1) {
-			@b[$i] = $l;
-			# print "skip $l ";
-		} else {
-		my $ol=ord($l);
-		my $ool = $cc ^ $ol;
-		# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
-		$start=0;
-		$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-		# print "  : k2=$key ";
-		$val = ( ($key % 177)-$cc) % 177 ;
-		# print " , v=$val cc0=$cc ";
-		while($val<0) { $val += 10;};
-		$cc = $val;
-		
-		if (++$salt >= 20857) {
-			$salt = 0;
-		}
-		# print " val=$val cc=$cc salt=$salt";
-		$key = $key + $key + ( $cc ^ $ol) + $salt;
-		# print " k2=$key\n";
-		@b[$i] = @num_digits[$cc % 10];
-		};
-		$i++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-# encrypt hex
-sub anon_idhex($)
-{
- my $v = $_[0];
-
- my $cc=0;
- my $salt = $default_salt;
- my @b = split('',$v);
- my $len = scalar @b;
- my $key  = ord(@b[$len-1])+17-48;	
- my $val=0;
- my $i=0;
- my $l;
- # randomize salt
-	foreach $l (@b) {
-		$salt += ord($l);
-	};
-	# print " > salt=$salt k0=$key\n";
-	my $start=1;
-	foreach $l (@b) {	
-		if($l eq '0' and $start==1) {
-			# @b[$i] = $l;
-		} else {
-		my $ol=ord($l);
-		my $ool = $cc ^ $ol;
-		# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
-		$start=0;
-		$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-		# print "  : k2=$key ";
-		$val = ( ($key % 177)-$cc) % 177 ;
-		# print " , v=$val ";
-		while($val<0) { $val += 16;};
-		$cc = $val;
-		
-		if (++$salt >= 20857) {
-			$salt = 0;
-		}
-		# print " val=$val cc=$cc salt=$salt";
-		$key = $key + $key + ( $cc ^ $ol) + $salt;
-		# print " k2=$key\n";
-		@b[$i] = @hex_digits[$cc % 16];
-		};
-		$i++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-# encypt alphanumeric string
-sub anon_anum($)
-{
- my $v = $_[0];
-
- my $cc=0;
- my $salt = $default_salt;
- my @b = split('',$v);
- my $len = scalar @b;
- my $key  = ord(@b[$len-1])+17-48;	
- my $val=0;
- my $i=0;
- my $l;
- # randomize salt
-	foreach $l (@b) {
-		$salt += ord($l);
-	};
-	# print " > salt=$salt k0=$key\n";
-	foreach $l (@b) {	
-		if($l eq '.' or $l eq '@' or $l eq '?' or $l eq ':') {
-			@b[$i] = $l;
-		} else {
-		my $ol=ord($l);
-		my $ool = $cc ^ $ol;
-		# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
-		$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-		# print "  : k2=$key ";
-		$val = ( ($key % 177)-$cc) % 177 ;
-		# print " , v=$val ";
-		while($val<0) { $val += 36;};
-		$cc = $val;
-		
-		if (++$salt >= 20857) {
-			$salt = 0;
-		}
-		# print " val=$val cc=$cc salt=$salt";
-		$key = $key + $key + ( $cc ^ $ol) + $salt;
-		# print " k2=$key\n";
-		@b[$i] = @anum_digits[$cc % 36];
-		};
-		$i++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-sub anon_email($)
-{
- my $v = $_[0];
-
- my $cc=0;
- my $salt = $default_salt;
- my @b = split('',$v);
- my $len = scalar @b;
- my $key  = ord(@b[$len-1])+17-48;	
- my $val=0;
- my $i=0;
- my $l;
- my $restart=1;
- # randomize salt
-	foreach $l (@b) {
-		$salt += ord($l);
-	};
-	
-	# print " > salt=$salt k0=$key\n";
-	foreach $l (@b) {
-		if($l eq '.' or $l eq '@') {
-			@b[$i] = $l;
-		} else {
-		my $ol=ord($l);
-		my $ool = $cc ^ $ol;
-		# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
-		$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-		# print "  : k2=$key ";
-		$val = ( ($key % 177)-$cc) % 177 ;
-		# print " , v=$val ";
-		while($val<0) { $val += 36;};
-		$cc = $val;
-		
-		if (++$salt >= 20857) {
-			$salt = 0;
-		}
-		# print " val=$val cc=$cc salt=$salt";
-		$key = $key + $key + ( $cc ^ $ol) + $salt;
-		# print " k2=$key\n";
-		@b[$i] = @anum_digits[$cc % 36];
-		};
-		$i++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-
 sub arand_digits($$)
 {
  my ($v,$start) = @_;
@@ -672,174 +375,6 @@ sub anon_generic($$$$$$) {
 	return $anon_str;
 }
 
-sub anon_generic1($$) {
-# my ($v, $chars, $exept, $start, $ignore_begin, $in_chars) = @_;
- my ($v, $ar) = @_;
- my $chars = @$ar[0];
- # my $exept = @$ar[1];
- # my $start = @$ar[2];
- # my $ignore_begin = @$ar[3];
- # my $in_chars = @$ar[4];
-
- my $max = scalar @$chars;
- my @b = split('',$v);
- my $flen = scalar @b;
- # initialize salt
- my $salt = $default_salt;
- # initialize key
- my $key = ord(@b[$flen-1])+17-48;	
- my $val=0;
- my $cc=0;
- my $l;
- my $pos=0;
- my $begin=1;
-
-
-	if(@$ar[4]==1) {
-		foreach $l (@b) {
-			if( !grep( /^$l$/, @$chars)) { 
-				# print "$l not in chars!\n";
-				return $v;
-			};
-			$salt += ord($l);
-		};
-	} else {
-		foreach $l (@b) {
-			$salt += ord($l);
-		};
-	};
-
-	foreach $l (@b) {
-		my $ol = ord($l);
-		
-		if(index(@$ar[1],$l)<0 and $pos>=@$ar[2] and !($begin==1 and index(@$ar[3],$l)>=0)) {
-			$begin=0;
-			$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-			$val = ( ($key % 177)-$cc) % 177 ;
-			while($val<0) { $val += $max;};
-			$cc = $val;
-			
-			if (++$salt >= 20857) {
-				$salt = 0;
-			}
-			$key = $key + $key + ( $cc ^ $ol) + $salt;
-			@b[$pos] = @$chars[$cc % $max];
-		};
-		$pos++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-sub anon_ustring($)
-{
- my $v = $_[0];
-
- my $cc=0;
- my $salt = $default_salt;
- my @b = split('',$v);
- my $len = scalar @b;
- my $key = ord(@b[$len-1])+17-48;	
- my $val=0;
- my $i=0;
- my $l;
-	foreach $l (@b) {
-		$salt += ord($l);
-	};
-	# print " > [$v] len=$len,salt=$salt,k0=$key\n";
-	foreach $l (@b) {	
-		my $ol=ord($l);
-		#print " $l -> $ol\n";
-		if($l eq '.' or $l eq '@' or $l eq '/'){
-			@b[$i] = $l;
-			# print "skip $l \n";
-		} else {
-			# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
-			$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-			# print "  : k2=$key ";
-			$val = ( ($key % 177)-$cc) % 177 ;
-			# print " , v=$val ";
-			while($val<0) { $val += 60;};
-			$cc = $val;
-			
-			if (++$salt >= 20857) {
-				$salt = 0;
-			}
-			# print " val=$val cc=$cc salt=$salt";
-			$key = $key + $key + ( $cc ^ $ol) + $salt;
-			# print " k2=$key\n";
-			@b[$i] = @unum_digits[$cc % 60];
-			# $l = @unum_digits[$cc % 60];
-			# my $ind = $cc % 60;
-			# print "$i $l $ind\n";
-		};
-		$i++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-sub anon_phone($)
-{
- my $v = $_[0];
-
- my $cc=0;
- my $salt = $default_salt;
- my @b = split('',$v);
- my $len = scalar @b;
- my $key  = int(@b[$len-1])+17;	
- my $val=0;
- my $i=0;
- my $l;
- if($v eq "DUMMY") {
-	# print " - DUMMY:\n";
- 	return("DUMMY");
- };
-	foreach $l (@b) {
-		$salt += ord($l);
-	};
-	my $l1 = $len-1;
-	my $vl = int(@b[$l1]);
-	# print " > salt=$salt k0=$key len-1=$l1 v=$vl [$v]\n";
-	my $start=1;
-	# print " $v\n";
-	foreach $l (@b) {	
-		
-		my $ol=ord($l);
-		# print " $l -> $ol\n";
-		if(ord($l) > 57 or ord($l)<48) { return $v }
-		if(($l eq '0' or $l eq '6') and $start==1) {
-			@b[$i] = $l;
-			# print "skip $l ";
-		} else {
-		my $ool = $cc ^ $ol;
-		# print " -: v=$val,ol=$ol,k=$key,cc=$cc \n";
-		$start=0;
-		$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
-		# print "  : k2=$key ";
-		$val = ( ($key % 177)-$cc) % 177 ;
-		# print " , v=$val ";
-		while($val<0) { $val += 10;};
-		$cc = $val;
-		
-		if (++$salt >= 20857) {
-			$salt = 0;
-		}
-		# print " val=$val cc=$cc salt=$salt";
-		$key = $key + $key + ( $cc ^ $ol) + $salt;
-		# print " k2=$key\n";
-		@b[$i] = @num_digits[$cc % 10];
-		};
-		$i++;
-	};
-	my $anon_str = join('',@b);
-	# print "> $v -> $anon_str\n";
-	return $anon_str;
-}
-
-
 sub anon_ipv4($)
 {
 	my $v = $_[0];
@@ -885,13 +420,6 @@ sub anonymize_file($$$$$)
 	# print " > $category, $type, $subtype, separator is [$sep] field_count = $field_count\n";
 	my $i=1;
 	my $atype;
-# 	foreach my $f (@fields) {
-# 		if(!exists($field_names{$f})) {
-# 			$field_names{$f}={$f};
-# 			print "	insert	field = $f\n";
-# 		};
-# 	};
-
 	my $oldsize = -s $fname;
 
 	# open my $in, "<:encoding(utf8)", $fname or die "$fname: $!";
@@ -981,7 +509,7 @@ sub get_dir($)
 
 ## ------ main -----------------------------------------------
 # my $in="This is ’ελληνικά γράμματα’";
-# my $out=anon_ustring($in);
+# my $out=anon_ustring1($in);
 # print "in [ $in ] -> [ $out ]\n";
 # exit;
 my $test=0;
@@ -990,9 +518,6 @@ if($test==1) {
 	my $out;
 	$in="This is ’ελληνικά γράμματα’";
 	$out=anon_generic($in,\@unum_digits,".@/",0,"",0);
-	print "anon_ustring    : in [ $in ] -> [ $out ]\n";
-	$out=anon_ustring($in);
-	print "anon_ustring new: in [ $in ] -> [ $out ]\n";
 	$in="00abcde134";
 	$out=anon_idhex($in);
 	print "anon hex	: in [$in] -> [$out]\n";

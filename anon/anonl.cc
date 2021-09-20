@@ -1,7 +1,7 @@
 /*
 	Anonymize logs
 */
-#define	version "cc_stl 1.2.5"
+#define	version "cc_stl 1.3.2"
 #include <stdio.h>
 #include <stdlib.h>
 // #include <strings.h>
@@ -299,51 +299,7 @@ unsigned const char *anon_phone1(const char *v)
 
 const unsigned char *anon_phone(const char *v)
 {
- static unsigned char anon_str[256];
- long int salt = DEFAULT_SALT;
- int len = strlen(v);
- anon_str[0]=0;
- long int cc=0;
- if(v==0) return anon_str;
- if(!strcmp(v,"DUMMY")) {
-// 	printf (" - DUMMY:\n");
-	return (unsigned char *)"DUMMY";
- };
-
- long int key = v[len-1]+17-48;
- long int val=0;
- int i=0;
- int l=0;
- 
- for(i=0;i<len;i++) salt += v[i];
-// printf(" > salt=%ld k0=%ld\n",salt,key);
- int start=1;
- for(i=0;l=v[i];i++){
- 	if(l>'9'||l<'0') return (unsigned char *)v;
- 	if((l=='0' ||l=='6') && start==1) {
-		anon_str[i]=l;
-	} else {
-		long int ool = cc ^ l;
-//		printf( " -: v=%ld,ol=%d,k=%ld,cc=%ld \n",val,l,key,cc);
-		start=0;
-		key = l + (key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3);
-//		printf("  : k2=%ld ",key);
-		val = (( key % 177) - cc) % 177;
-//		printf(" , v=%ld cc0=%ld ",val,cc);
-		while(val<0) val += MAX_NUM_DIGITS;
-		cc=val;
-		
-		if( ++salt >= 20857) {
-			salt=0;
-		};
-//		printf(" val=%ld cc=%ld salt=%ld",val,cc,salt);
-		key = key + key + (cc ^ l) + salt;
-//		printf(" k2=%ld\n",key);
-		anon_str[i] = num_digits[cc%MAX_NUM_DIGITS];
-	};
- };anon_str[i]=0;
-// printf("> %s -> %s\n",v,anon_str);
- return anon_str;
+	return arand_digits(v,4);
 }
 
 const unsigned char *anon_idnum1(const char *v)
@@ -743,7 +699,6 @@ const char *anonymize_field(char *f,const char *field_name)
 #endif
 
 	// printf("anonymize_field: %s -> %d\n",field_name,type);
-#if	1
 //	char *(afun)(char *c) = anon_function[type];
 //	return afun(f);
 //	if(!strcmp(f,"DUMMY")) printf("type=%d field=%s DUMMY\n",type,field_name);
@@ -751,19 +706,6 @@ const char *anonymize_field(char *f,const char *field_name)
 	return ((char *)anon_function1[type](f));
 #else
 	return ((char *)anon_function[type](f));
-#endif
-#else
-	switch(type) {
-		case T_NONE:	return anon_none(f);
-		case T_STRING:	return anon_anum(f);
-		case T_PHONE:	return anon_phone1(f);
-		case T_EMAIL:	return anon_email(f);
-		case T_ANUM:	return anon_anum(f);
-		case T_IDHEX:	return anon_idhex(f);
-		case T_IDNUM:	return anon_idnum(f);
-		case T_IPV4:	return anon_ipv4(f);
-		case T_IPV6:	return anon_ipv6(f);
-	};
 #endif
 	return f;
 }

@@ -9,7 +9,7 @@ use integer;
 # use Digest::MD4 qw(md4 md4_hex md4_base64);
 binmode(STDOUT, "encoding(UTF-8)");
 
-my $app_version = "1.3.2";
+my $app_version = "1.3.3";
 my $log_dir = "logs";
 my $anon_log_dir = "anonymous_logs2";
 my $category;
@@ -72,7 +72,8 @@ sub anon_idhex1($)
 
 sub anon_anum1($)
 {
-	return anon_anum($_[0]);
+	return anon_generic($_[0],\@anum_digits,".@?:",0,"",0);
+	# return anon_anum($_[0]);
 }
 
 # encypt alphanumeric string
@@ -327,6 +328,7 @@ sub anon_generic($$$$$$) {
  my $max = scalar @$chars;
  my @b = split('',$v);
  my $flen = scalar @b;
+ if($flen == 0) { return $v ;};
  # initialize salt
  my $salt = $default_salt;
  # initialize key
@@ -337,35 +339,35 @@ sub anon_generic($$$$$$) {
  my $pos=0;
  my $begin=1;
 
-
-	if($in_chars==1) {
-		foreach $l (@b) {
-			if( !grep( /^$l$/, @$chars)) { 
-				# print "$l not in chars!\n";
-				return $v;
-			};
-			$salt += ord($l);
-		};
-	} else {
-		foreach $l (@b) {
-			$salt += ord($l);
-		};
+	my $f1=@b[0];
+	if($in_chars==1){
+	if ( !grep( /^$f1$/, @$chars)) {
+		# print "$f1 not in chars!\n";
+		return $v;
+	}};
+	foreach $l (@b) {
+		$salt += ord($l);
 	};
+
 
 	foreach $l (@b) {
 		my $ol = ord($l);
-		
+		# print "$ol $l\n";
 		if(index($exept,$l)<0 and $pos>=$start and !($begin==1 and index($ignore_begin,$l)>=0)) {
 			$begin=0;
 			$key = $ol+($key & 0x1FFFFFFF) ^ (($key >> 29) & 0x3);
 			$val = ( ($key % 177)-$cc) % 177 ;
+			# print " ol=$ol val=$val key=$key cc=$cc\n";
 			while($val<0) { $val += $max;};
 			$cc = $val;
+			# print "    $key $val\n";
 			
 			if (++$salt >= 20857) {
 				$salt = 0;
 			}
+			# print "    salt=$salt\n";
 			$key = $key + $key + ( $cc ^ $ol) + $salt;
+			# print "    key=$key\n";
 			@b[$pos] = @$chars[$cc % $max];
 		};
 		$pos++;
@@ -546,6 +548,10 @@ if($test==1) {
 # exit
 # initialize anonymized directory
 print "Version $app_version Initialize anonymized directory $anon_log_dir\n";
+# my $s1 = "0000000006769493";
+# my $s2 = anon_idnum1($s1);
+# print $s1,"->",$s2;
+# exit
 `rm -rf $anon_log_dir`;
 # for each log category
 my @categories = get_dir($log_dir);

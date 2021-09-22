@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 
 # Anonymous logs
 
@@ -6,10 +6,20 @@ import os
 import shutil
 import pathlib
 import sys
+from math import trunc
 
-version="1.3.0"
+version="1.3.2"
 log_dir = "logs"
 anon_log_dir = 'anonymous_py'
+default_salt=23;	## a random value!
+num_digits = ['0','1','2','3','4','5','6','7','8','9']
+rand_digits = ['5','8','6','4','7','9','3','2','0','1']
+hex_digits = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
+unum_digits = ['0','1','2','3','4','5','6','7','8','9',
+	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+	'Α','Β','Γ','Δ','Ε','Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο','Π','Ρ','Σ','Τ','Υ','Φ','Χ','Ψ','Ω']
+anum_digits = ['0','1','2','3','4','5','6','7','8','9',
+	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
 categories_config = {
     "email"         : ["<*>",   [ "ts","src_filename","src_filedate","src_filesize","logfile_line","mailserver_name","mailserver_type","queue","session","message_id","resent_message_id","sender","receiver","user","status","domain_not_found","helo","ctladdr","orig_to","sasl_sender","remote_ip","content_ifnot_queue"]],
@@ -34,24 +44,100 @@ categories_config = {
     "udcslike"      : ["<*>",   [ "ts","src_filename","src_filedate","src_filesize","version","seqnum","networkid","eventclass","networkprod","action","eventsourceid","ndr","aaddrplan","nde","baddrplan","newdest","newdaddrplan","chargedparty","date","starttime","duratunit","duration","secondunit","amountofsus","acategory","priority","numsuppserv","suppserv1","suppserv2","suppserv3","suppserv4","suppserv5","suppserv6","suppserv7","suppserv8","numgroups","origcellid","callid_hex","inowner","misc","reserved","parsed","service","prefix","number" ]]
 }
 
+num_digits = ['0','1','2','3','4','5','6','7','8','9']
+rand_digits = ['5','8','6','4','7','9','3','2','0','1']
+
+def arand_digits(v,start):
+    anon_list = []
+    pos=0
+    for l in v:
+        i=ord(l)-ord('0')
+        if i>9 or i<0:
+            return v
+        if pos >= start:
+            anon_list.append(rand_digits[i])
+        else:
+            anon_list.append(l)
+        pos = pos+1
+
+    anon_str = ''.join(anon_list)
+    # print(v," -> ",anon_str)
+    return anon_str
+
+# $v -> input string
+# $chars -> array with output chars
+# $exept -> string with chars to not convert
+# $start -> start convert from this position
+# $ignore_begin -> string with chars that do not convert at the beginning of the line
+# $in_chars -> if not found in @chars then return original string
+def anon_generic(v,chars,exept,start,ignore_begin,in_chars):
+    max = len(chars)
+    flen = len(v)
+    if flen==0:
+        return v
+    b = []
+    # initialize salt
+    salt = default_salt;
+    # initialize key
+    key = ord(v[flen-1])+17-48;	
+    val=0;
+    cc=0;
+    pos=0;
+    begin=1;
+    # print("max is ",max)
+    if in_chars==1:
+        if v[0] not in chars:
+            return v
+
+    for l in v:
+        salt += ord(l)
+
+    for l in v:
+        ol=ord(l)
+        if (l not in exept) and (pos >= start) and not (begin==1 and l in ignore_begin):
+            begin=0
+            key = ol+(key & 0x1FFFFFFF) ^ ((key >> 29) & 0x3)
+            val = ((key % 177) - cc) % 177
+            x=((key % 177) - cc)
+            d=trunc(float(x)/177)
+            val = x - d*177
+            # print(" ol=",ol,"val=",val,"key=",key,"cc=",cc)
+            while val <0:
+                val = val+max
+            # print("    ",key,val)
+            cc = val;
+            salt=salt+1
+            if salt >= 20857:
+                salt = 0
+            # print("    salt=",salt)
+            key = key + key + ( cc ^ ol) + salt
+            # print ("    key=",key)
+            b.append(chars[cc % max])
+        else:
+            b.append(v[pos])
+        pos=pos+1
+
+    anon_str = ''.join(b)
+    # print "> $v -> $anon_str\n";
+    return anon_str
 
 def anon_none(f):
     return f
 
 def anon_phone1(f):
-    return f
+    return arand_digits(f,4)
 
 def anon_anum1(f):
-    return f
+    return anon_generic(f,anum_digits,".@?:",0,"",0)
 
 def anon_idnum1(f):
-    return f
+    return anon_generic(f,num_digits,"",0,"0",1)
 
 def anon_string1(f):
-    return f
+    return anon_generic(f,unum_digits,".@/",0,"",0)
 
 def anon_email1(f):
-    return f
+    return anon_generic(f,anum_digits,"@.",0,"",0)
 
 def anon_domain(f):
     return f
@@ -63,7 +149,7 @@ def anon_ipv6(f):
     return f
 
 def anon_idhex1(f):
-    return f
+    return anon_generic(f,hex_digits,"",0,"0",0)
 
 field_funcs_gen = {
     "ts"                        : anon_none,    # 20200103123507
@@ -215,9 +301,10 @@ field_funcs_gen = {
 
 def anonymize_file(from_dir,file,out_dir,category,subtype):
     fname = from_dir+"/"+file
+    out_file = out_dir+"/"+file
     type = category if subtype=="default" else subtype
 
-    print (" >> ",out_dir,category,subtype,">",type)
+    # print (" >> ",out_dir,category,subtype,">",type)
     if type in categories_config:
         sep = categories_config[type][0]
         #print (type,"is Found! separator is ",sep)
@@ -228,24 +315,50 @@ def anonymize_file(from_dir,file,out_dir,category,subtype):
         # a=txt.split(sep)
         filein = open(fname,'r')
         lines_in = filein.readlines()
+        fileout = open(out_file,'w')
         count=0
+        # print ("File type ",type,"is Found! separator is ",sep," fields ",field_count)
         for line in lines_in:
             count += 1
-            aline = line.split(sep)
+            # line = line.rstrip()
+            aline = line.rstrip().split(sep)
             count1 = len(aline)
+            # print(":: ",line)
             if count1!=field_count:
-                print("field count ",field_count,"<>",count1)
-                print(line)
+                print(" !!!!!!!!!!!!!!!!!!!!!!!field count ",field_count,"<>",count1)
                 print(fields)
                 return
-            for f in fields:
-                
-        print (type,"is Found! separator is ",sep," fields ",field_count," lines ",count)
-        
+            line_out=[]
+            i=0
+            for f in aline:
+                type = fields[i]
+                fout = field_funcs_gen[type](f)
+                line_out.append(fout)
+                i=i+1
+
+            aline_out = sep.join(line_out)
+            print(aline_out,file=fileout)
+            
+
+        filein.close()
+        fileout.close()
+        old_size = os.path.getsize(fname)
+        new_size = os.path.getsize(out_file)
+        print (" >",file,"size =",old_size,"->",new_size);
     else:
         print ("    skiping anonymize ",type," ",subtype)
         
-        
+def anon_done(source_dir,fname):
+    fa = fname.split('.')
+    # print("fname: ",fname)
+    cat = fa[1]
+    type = fa[2]
+ # print "anon_done: cat=$cat, type=$type name=$fname\n";
+    anon_archive_dir = anon_log_dir+"/"+cat+"/queue/"+type+"/archive"
+    # `mkdir -p $anon_archive_dir`;
+    os.makedirs(anon_archive_dir,exist_ok=True)
+    anonymize_file(source_dir,fname,anon_archive_dir,cat,type)
+    
 
 # initialize anonymized directory
 try:
@@ -263,18 +376,52 @@ else:
     os.mkdir(anon_log_dir)
 
 print("version ",version," initilize dir ",anon_log_dir)
+
+# s1="0000000006769493"
+# sout = anon_idnum1(s1)
+# print (s1,"->",sout)
+# x=((15816 % 177)-118)
+# res = x % 177
+# d = trunc(float(x)/177)
+# r = x - d * 118
+# print ("res=",res,r)
+# quit()
+# s1 = "Καλημέρα σας! 0123456789"
+# for l in s1:
+#     print(l,ord(l))
+# quit()
 i=0
 for category_i in os.listdir(log_dir):
     subtype_dir = log_dir+"/"+category_i+"/queue"
     print(category_i)
     for subtype_i in os.listdir(subtype_dir):
         archives_dir=subtype_dir+"/"+subtype_i+"/archive"
-        print ("  :",archives_dir)
+        print ("# in",archives_dir)
         anon_archives_dir=anon_log_dir+"/"+category_i+"/queue/"+subtype_i+"/archive"
         # print ("  >",anon_archives_dir)
         os.makedirs(anon_archives_dir,exist_ok=True)
         for archive_i in os.listdir(archives_dir):
-            print("     ",archive_i)
+            # print("     ",archive_i)
             anonymize_file(archives_dir,archive_i,anon_archives_dir,category_i,subtype_i)
 
+# *********************** insert done ones **************
+    category_dir = log_dir+"/"+category_i
 
+    for done_dir in os.listdir(category_dir):
+        fdname = category_dir+"/"+done_dir
+        if os.path.isdir(fdname):
+            if "done" in done_dir:
+                print (" : convert files in",fdname)
+                for done0_file in os.listdir(fdname):
+                    done0_name = fdname+"/"+done0_file
+                    print ("   -",done0_name)
+                    if os.path.isdir(done0_name):
+                        print("    convert files in subdir",done0_name)
+                        for done1_file in os.listdir(done0_name):
+                            # print ("    ",done1_file,"in",done0_name);
+                            anon_done(done0_name,done1_file)
+                    else:
+                        # print
+                        anon_done(fdname,done0_file)
+
+print ("\nDONE",anon_log_dir,"created !!");

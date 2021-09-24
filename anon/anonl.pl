@@ -9,7 +9,7 @@ use integer;
 # use Digest::MD4 qw(md4 md4_hex md4_base64);
 binmode(STDOUT, "encoding(UTF-8)");
 
-my $app_version = "1.3.3";
+my $app_version = "1.4.0";
 my $log_dir = "logs";
 my $anon_log_dir = "anonymous_logs2";
 my $category;
@@ -304,8 +304,70 @@ sub arand_digits($$)
  my $flen = scalar @b;
  my $pos=0;
  my $l;
+ my $l=@b[0];
+ if($l lt '0' or $l gt '9') { return $v;}; # return the original if not numeric!
  foreach $l (@b) {
-	if($l lt '0' or $l gt '9') { return $v;};
+# 	if($l lt '0' or $l gt '9') { return $v;};
+	if($pos >= $start){
+		my $ind = $l-'0';
+		@b[$pos]=@rand_digits[$ind];
+	};
+	$pos++;
+ };
+ my $anon_str = join('',@b);
+ # print "> $v -> $anon_str\n";
+ return $anon_str;
+}
+
+# $v is the string
+# $cond is the condition to preserve the first $start digits
+# otherwhise do not preserve anything
+sub arand_digits_condition($$$)
+{
+ my ($v,$cond,$start) = @_;
+ my @b = split('',$v);
+ my $flen = scalar @b;
+ my $pos=0;
+ my $l;
+ my $l=@b[0];
+ if($l lt '0' or $l gt '9') { return $v;}; # return the original if not numeric!
+ if ($v =~ "^($cond)") {
+	 foreach $l (@b) {
+		if($pos >= $start){
+			my $ind = $l-'0';
+			@b[$pos]=@rand_digits[$ind];
+		};
+		$pos++;
+	 };
+ } else {
+	 foreach $l (@b) {
+		my $ind = $l-'0';
+		@b[$pos]=@rand_digits[$ind];
+		$pos++;
+	 };
+ };
+ my $anon_str = join('',@b);
+ # print "> $v -> $anon_str\n";
+ return $anon_str;
+}
+
+sub arand_digits_spec1($)
+{
+ my ($v,$cond) = @_;
+ my $start=0;
+ my @b = split('',$v);
+ my $flen = scalar @b;
+ my $pos=0;
+ my $l;
+ $l=@b[0];
+ if($l lt '0' or $l gt '9') { return $v;}; # return the original if not numeric!
+ if ($v =~ "^(00306)") {
+	$start=6;
+ };
+ if ($v =~ "^(00302)") {
+	$start=5;
+ };
+ foreach $l (@b) {
 	if($pos >= $start){
 		my $ind = $l-'0';
 		@b[$pos]=@rand_digits[$ind];
@@ -548,10 +610,12 @@ if($test==1) {
 # exit
 # initialize anonymized directory
 print "Version $app_version Initialize anonymized directory $anon_log_dir\n";
-# my $s1 = "0000000006769493";
-# my $s2 = anon_idnum1($s1);
-# print $s1,"->",$s2;
-# exit
+my $s1 = "0030600000006769493";
+my $s2 = arand_digits_condition($s1,"00306",4);
+print $s1,"->",$s2,"\n";
+my $s2 = arand_digits_spec1($s1);
+print $s1,"->",$s2,"\n";
+exit
 `rm -rf $anon_log_dir`;
 # for each log category
 my @categories = get_dir($log_dir);

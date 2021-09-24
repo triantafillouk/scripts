@@ -13,3 +13,6 @@ time ./anonl_cc_stl1 > anonl_cc_stl1.out
 
 echo ------ perl version ------
 time ./anonl.pl > anonl_pl.out
+
+echo ------ python version -----
+time ./anonl.py > anonl_py.out

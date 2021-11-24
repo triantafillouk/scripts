@@ -8,7 +8,7 @@ import pathlib
 import sys
 from math import trunc
 
-version="1.3.2"
+version="1.4.1"
 log_dir = "logs"
 anon_log_dir = 'anonymous_py'
 default_salt=23;	## a random value!
@@ -20,6 +20,10 @@ unum_digits = ['0','1','2','3','4','5','6','7','8','9',
 	'Α','Β','Γ','Δ','Ε','Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο','Π','Ρ','Σ','Τ','Υ','Φ','Χ','Ψ','Ω']
 anum_digits = ['0','1','2','3','4','5','6','7','8','9',
 	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+
+category_names = [
+	"gprs","h_msc","mms","sms_gprs","tap_in","v_msc","orig_sms",
+    ];
 
 categories_config = {
     "email"         : ["<*>",   [ "ts","src_filename","src_filedate","src_filesize","logfile_line","mailserver_name","mailserver_type","queue","session","message_id","resent_message_id","sender","receiver","user","status","domain_not_found","helo","ctladdr","orig_to","sasl_sender","remote_ip","content_ifnot_queue"]],
@@ -392,6 +396,8 @@ print("version ",version," initilize dir ",anon_log_dir)
 # quit()
 i=0
 for category_i in os.listdir(log_dir):
+    if category_i not in category_names:
+        continue
     subtype_dir = log_dir+"/"+category_i+"/queue"
     print(category_i)
     for subtype_i in os.listdir(subtype_dir):

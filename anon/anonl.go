@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	version = "1.3.2"
+	version = "1.4.1"
 )
 
 const (
@@ -59,6 +59,9 @@ var unum_digits = []int {
 	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 	'Α','Β','Γ','Δ','Ε','Ζ','Η','Θ','Ι','Κ','Λ','Μ','Ν','Ξ','Ο','Π','Ρ','Σ','Τ','Υ','Φ','Χ','Ψ','Ω' };
 
+var category_names = []string{
+	"gprs","h_msc","mms","sms_gprs","tap_in","v_msc","orig_sms",
+	};
 
 var field_types = []FIELD_TYPE {
 {"ts"					, T_NONE  },	// 20200103123507
@@ -208,6 +211,12 @@ var field_types = []FIELD_TYPE {
 {"reserved"				, T_STRING  },	// 
 }
 
+func valid_log(lname string) bool {
+	for _,cname := range category_names {
+		if cname == lname { return true }
+	}
+	return false
+}
 
 func anon_none (f string) string {
 	return f
@@ -551,6 +560,7 @@ func main() {
 	// for each category
 	for _, cat_dir := range category_files {
 //		fmt.Println(" ", cat_dir.Name(), cat_dir.IsDir())
+		if !valid_log(cat_dir.Name()) { continue }
 		subtype_dir = log_dir+"/"+cat_dir.Name()+"/queue"
 //		fmt.Println("  subtype=",subtype_dir)
 		subtypes, err := ioutil.ReadDir(subtype_dir);

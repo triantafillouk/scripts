@@ -9,7 +9,7 @@ use integer;
 # use Digest::MD4 qw(md4 md4_hex md4_base64);
 binmode(STDOUT, "encoding(UTF-8)");
 
-my $app_version = "1.4.0";
+my $app_version = "1.4.1";
 my $log_dir = "logs";
 my $anon_log_dir = "anonymous_logs2";
 my $category;
@@ -30,6 +30,23 @@ my @unum_digits = ('0','1','2','3','4','5','6','7','8','9',
 my @anum_digits = ('0','1','2','3','4','5','6','7','8','9',
 	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 );
+
+my @category_names = (
+	'gprs','h_msc','mms','sms_gprs','tap_in','v_msc','orig_sms',
+	);
+
+sub valid_log($)
+{
+ my $cname = $_[0];
+	foreach my $n1 (@category_names) {
+		if($n1 eq $cname) { 
+			# print "--------------- valid log $cname ------------\n";
+			return 1;
+		};
+	};
+	# print "--------------- log not found!!!!! $cname ------------\n";
+	return 0;
+}
 
 sub anon_none($)
 {
@@ -274,26 +291,26 @@ reserved				=> \&anon_string1,#
 
 # my @categories = ['chronocard','email','gprs','h_msc','ict','ict_csv','itu_csv','mms','oss','radius','tap_in','telecard','msc_sups','udcs','udcslike','v_msc','w_sms',];
 my %categories_config = (
-	"email"			=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","logfile_line","mailserver_name","mailserver_type","queue","session","message_id","resent_message_id","sender","receiver","user","status","domain_not_found","helo","ctladdr","orig_to","sasl_sender","remote_ip","content_ifnot_queue"]],
+#	"email"			=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","logfile_line","mailserver_name","mailserver_type","queue","session","message_id","resent_message_id","sender","receiver","user","status","domain_not_found","helo","ctladdr","orig_to","sasl_sender","remote_ip","content_ifnot_queue"]],
 	"gprs"			=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
-	"chronocard"	=> [','  ,	[ "ts","src_filename","src_filedate","src_filesize","duration","calling","called","servicenumber","chronocard_id","balanceafter","balanceconsumed","expirationoffset","recseparator","parsed","service","prefix","number"]],
-	"ict"			=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","usersummarisation","udcsreserved","parsed","service","prefix","number" ]],
-	"ict_csv"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number" ]],
-	"itu"			=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number" ]],
-	"itu_csv"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number" ]],
+#	"chronocard"	=> [','  ,	[ "ts","src_filename","src_filedate","src_filesize","duration","calling","called","servicenumber","chronocard_id","balanceafter","balanceconsumed","expirationoffset","recseparator","parsed","service","prefix","number"]],
+#	"ict"			=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","usersummarisation","udcsreserved","parsed","service","prefix","number" ]],
+#	"ict_csv"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number" ]],
+#	"itu"			=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number" ]],
+#	"itu_csv"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","incomingswitchid","outgoingswitchid","recordcallid","linkfield","duration","a_number","b_number","incomingtrunk","outgoingtrunk","incomingproduct","outgoingproduct","datavolume","dataunit","udcsreserved","parsed","service","prefix","number" ]],
 	"msc_sups"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
-	"oss"			=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","a_number","b_number","duration","product","parsed","service","prefix","number" ]],
+#	"oss"			=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","a_number","b_number","duration","product","parsed","service","prefix","number" ]],
 	"orig_mms"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
 	"orig_msc"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
 	"orig_pbx"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
 	"orig_sms"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
-	"radius"		=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","username","acct_status_type","acct_session_time","acct_unique_session_id","framed_ip_address","nas_port_type","nas_port_id","calling_station_id","nas_ip_address","port_parsed","port_detail","delegated_ipv6_prefix","haap_lte_ipv4","haap_dsl_ipv4","ishybrid"]],
-	"telecard"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","validity_date_start","validity_date_end","calling","calling_address","called","duration","card_balance_contained","card_balance_consumed","card_number" ]],
+#	"radius"		=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","username","acct_status_type","acct_session_time","acct_unique_session_id","framed_ip_address","nas_port_type","nas_port_id","calling_station_id","nas_ip_address","port_parsed","port_detail","delegated_ipv6_prefix","haap_lte_ipv4","haap_dsl_ipv4","ishybrid"]],
+#	"telecard"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","validity_date_start","validity_date_end","calling","calling_address","called","duration","card_balance_contained","card_balance_consumed","card_number" ]],
 	"term_mms"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
 	"term_msc"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
 	"term_sms"		=> ['|'  ,	[ "ts","src_filename","src_filedate","src_filesize","subscriber_type","imei","imsi","calling_number","ipaddress","called_number","hc_network","ext_carrier","serving_vplmn","request_time","start_time","end_time","call_duration","time_shift","service_el_tp","service_el_id","first_cell","dest_zone","call_flag","service_qual","record_id","session_scn","service_scn","service_id","service_mode","service_class","service_type","service_prov_id","content_size","content_size_upl","content_size_dnl","service_status","cdr_type","termination_ind","charge","last_cell","master_msisdn" ]],
-	"udcs"			=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","version","seqnum","networkid","eventclass","networkprod","action","eventsourceid","ndr","aaddrplan","nde","baddrplan","newdest","newdaddrplan","chargedparty","date","starttime","duratunit","duration","secondunit","amountofsus","acategory","priority","numsuppserv","suppserv1","suppserv2","suppserv3","suppserv4","suppserv5","suppserv6","suppserv7","suppserv8","numgroups","origcellid","callid","inowner","misc","reserved","parsed","service","prefix","number" ]],
-	"udcslike"		=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","version","seqnum","networkid","eventclass","networkprod","action","eventsourceid","ndr","aaddrplan","nde","baddrplan","newdest","newdaddrplan","chargedparty","date","starttime","duratunit","duration","secondunit","amountofsus","acategory","priority","numsuppserv","suppserv1","suppserv2","suppserv3","suppserv4","suppserv5","suppserv6","suppserv7","suppserv8","numgroups","origcellid","callid_hex","inowner","misc","reserved","parsed","service","prefix","number" ]]
+#	"udcs"			=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","version","seqnum","networkid","eventclass","networkprod","action","eventsourceid","ndr","aaddrplan","nde","baddrplan","newdest","newdaddrplan","chargedparty","date","starttime","duratunit","duration","secondunit","amountofsus","acategory","priority","numsuppserv","suppserv1","suppserv2","suppserv3","suppserv4","suppserv5","suppserv6","suppserv7","suppserv8","numgroups","origcellid","callid","inowner","misc","reserved","parsed","service","prefix","number" ]],
+#	"udcslike"		=> ["<*>",	[ "ts","src_filename","src_filedate","src_filesize","version","seqnum","networkid","eventclass","networkprod","action","eventsourceid","ndr","aaddrplan","nde","baddrplan","newdest","newdaddrplan","chargedparty","date","starttime","duratunit","duration","secondunit","amountofsus","acategory","priority","numsuppserv","suppserv1","suppserv2","suppserv3","suppserv4","suppserv5","suppserv6","suppserv7","suppserv8","numgroups","origcellid","callid_hex","inowner","misc","reserved","parsed","service","prefix","number" ]]
 );
 
 
@@ -307,7 +324,7 @@ sub arand_digits($$)
  my $l=@b[0];
  if($l lt '0' or $l gt '9') { return $v;}; # return the original if not numeric!
  foreach $l (@b) {
-# 	if($l lt '0' or $l gt '9') { return $v;};
+ 	if($l lt '0' or $l gt '9') { return $v;};
 	if($pos >= $start){
 		my $ind = $l-'0';
 		@b[$pos]=@rand_digits[$ind];
@@ -610,18 +627,19 @@ if($test==1) {
 # exit
 # initialize anonymized directory
 print "Version $app_version Initialize anonymized directory $anon_log_dir\n";
-my $s1 = "0030600000006769493";
-my $s2 = arand_digits_condition($s1,"00306",4);
-print $s1,"->",$s2,"\n";
-my $s2 = arand_digits_spec1($s1);
-print $s1,"->",$s2,"\n";
-exit
+# my $s1 = "0030600000006769493";
+# my $s2 = arand_digits_condition($s1,"00306",4);
+# print $s1,"->",$s2,"\n";
+# my $s2 = arand_digits_spec1($s1);
+# print $s1,"->",$s2,"\n";
+# exit
 `rm -rf $anon_log_dir`;
 # for each log category
 my @categories = get_dir($log_dir);
 foreach $category (@categories)
 {
-	if(1) {
+
+	if(valid_log($category)) {
 	# print "# $category\n";
 	# for each subcategory dir
 	$subtype_dir = "$log_dir/$category/queue";
@@ -644,7 +662,7 @@ foreach $category (@categories)
 			anonymize_file($archive_dir,$archive,$anon_archive_dir,$category,$subtype);
 		};
 	};
-	};
+	} else { next;};
 # *********************** insert done ones **************
 	my $category_dir = "$log_dir/$category";
 	my @category_dirs = get_dir($category_dir);

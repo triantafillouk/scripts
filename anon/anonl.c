@@ -1,23 +1,26 @@
 /*
 		Anonymize logs
 */
-#define	version "c 1.3.2"
+#define	version "c 1.4.1"
 #include <stdio.h>
 #include <stdlib.h>
-// #include <strings.h>
 #include <string.h>
-// #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <time.h>
+
 #include "alist.h"
 
 #define MAX_CATEGORY	20
 BTREE *bt_field_table;
+int now_seconds=0;	// current time epoq seconds
+int last_days=15;
 
 #define TEST	1
 
-char *log_dir = "logs";
+char *log_dir = "logs_gz";
 char *anon_log_dir = "anonymous_logs_c";
 
 enum {
@@ -57,7 +60,8 @@ typedef struct CAT_DEFINITION {
 } CAT_DEFINITION;
 
 int num_digits[] = {'0','1','2','3','4','5','6','7','8','9',0};
-int rand_digits[] = {'5','8','6','4','7','9','3','2','0','1',0};
+int rand_digits[] = {'5','8','6','4','7','9','3','2','0','1' };
+
 int hex_digits[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F',0};
 int anum_digits[] = {
 	'0','1','2','3','4','5','6','7','8','9',
@@ -76,6 +80,11 @@ const char *canum_digits[] = {
 const char *unum_digits[] = {"0","1","2","3","4","5","6","7","8","9",
 	"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
 	"Α","Β","Γ","Δ","Ε","Ζ","Η","Θ","Ι","Κ","Λ","Μ","Ν","Ξ","Ο","Π","Ρ","Σ","Τ","Υ","Φ","Χ","Ψ","Ω",""
+};
+
+const char *category_names[] = {
+	"gprs","h_msc","mms","sms_gprs","tap_in","v_msc","orig_sms",
+	NULL
 };
 
 FIELD_TYPE field_types[] = {
@@ -228,6 +237,16 @@ FIELD_TYPE field_types[] = {
 };
 
 
+int valid_log(char *lname)
+{
+ int i=0;
+ while(category_names[i]!=NULL) {
+		if(!strcmp(category_names[i],lname)) return 1;
+		i++;
+	};
+	return 0;
+}
+
 unsigned const char *anon_none(const char *v)
 {
 	return (unsigned const char *)v;
@@ -238,6 +257,22 @@ unsigned const char *anon_anum1(const char *v)
 	return anon_generic(v,canum_digits,MAX_ANUM_DIGITS,".@?:",0,"",0);
 }
 
+void set_gunzipped(char *fname)
+{
+ char unzipped_name[1024];
+ int len=strlen(fname);
+ if(strcmp(fname+len-3,".gz")==0) {
+	char cmd[2048];
+	int result;
+ 	// printf("%s is compressed!\n",fname);
+	sprintf(cmd,"gunzip -c %s > /tmp/uncompressed",fname);
+	result = system(cmd);
+	sync();
+	strcpy(fname,"/tmp/uncompressed");
+ } else {
+ 	// printf("last 3 [%s]\n",fname+len-3);
+ }
+}
 
 unsigned const char *anon_anum(const char *v)
 {
@@ -282,8 +317,10 @@ unsigned const char *anon_anum(const char *v)
 
 unsigned const char *anon_phone1(const char *v)
 {
-	return arand_digits(v,4);
 	// return anon_generic(v,cnum_digits,MAX_NUM_DIGITS,"",0,"06",1);
+	unsigned const char *v1 = arand_digits(v,4);
+	// printf("anon_phone1:[%s]->[%s]\n",v,v1);
+	return v1;
 }
 
 const unsigned char *anon_phone(const char *v)
@@ -473,31 +510,46 @@ int utf8_ord(unsigned char *str)
  return (ch1-0xF0)*64*0x1000+(ch2-0x80)*0x1000+(ch3-0x80)*64+ch4%0x40;
 }
 
-// anonymize digits randomly ?
 const unsigned char *arand_digits (const char *v, int start)
 {
-	static unsigned char anon_str[2048];
+	static char anon_str[1024];
+	// long int cc=0;
+	// int slen = strlen(v);
+	if(v==0) return (unsigned char *)anon_str;
+	unsigned char *uv = (unsigned char *)v;
 
-	anon_str[0]=0;
-	unsigned char *uv=(unsigned char *)v;
-	if(v==0) return anon_str;
-	int pos=0;
-	unsigned int l=0;
+	int i=0;
 
-	for(pos=0;uv[pos]!=0;pos++)
-	{
-		l=uv[pos];
-		if(l<'0' || l>'9') {
-			return uv;
-		};
-		if(pos>=start) {
-			anon_str[pos]=rand_digits[l-'0'];
-		} else {
-			anon_str[pos]=l;
-		};
-	};anon_str[pos]=0;
-	// printf("> %s -> %s\n",v,anon_str);
-	return (unsigned char *)anon_str;
+	int ulen=0;
+	while(*uv) {
+		uv += utf8_len(uv);
+		ulen++;
+	};
+
+ anon_str[0]=0;
+ int pos=0;
+ int l;
+ for(uv=(unsigned char*)v;(l=utf8_ord(uv));uv+=utf8_len(uv))
+ {
+	unsigned char c[2];
+ 	int asl=strlen((char *)anon_str);
+	c[0]=uv[0];c[1]=0;
+	// printf("[%s] [%s] l=%d\n",c,anon_str,l);
+#if	1
+	if(l<'0' || l>'9') {
+		strcpy(anon_str,v);
+		return (unsigned char *)anon_str;
+	};
+#endif
+	if(pos>=start) {
+		anon_str[pos++]=rand_digits[l-'0'];
+		// anon_str[pos++]='#';
+	} else {
+		anon_str[pos++]=l;
+	};
+ };
+ anon_str[pos]=0;
+ return (unsigned char *)anon_str;
 }
 
 // v -> input string
@@ -508,7 +560,7 @@ const unsigned char *arand_digits (const char *v, int start)
 // in_chars -> if not found in @chars then return original string
 const unsigned char *anon_generic (const char *v, const char *chars[], int max,const char *except, int start,const char *ignore_begin,int in_char)
 {
-	static char anon_str[2048];
+	static char anon_str[1024];
 	// int max=0;
 	int salt = DEFAULT_SALT ;
 	anon_str[0]=0;
@@ -642,7 +694,7 @@ const unsigned char *anon_email1(const char *v)
 
 const unsigned char *anon_email(const char *v)
 {
- static char anon_str[2048];
+ static char anon_str[1024];
  long int salt = DEFAULT_SALT;
  int len = strlen(v);
  anon_str[0]=0;
@@ -910,17 +962,18 @@ CAT_DEFINITION categories[] = {
 
 void anonymize_file(char *from,char *file,char *out_dir,char *category,char *subtype)
 {
- char fname[2048];
- char out_file[2048];
+ char fname[1024];
+ char out_file[1024];
 
  char *anon_array[100];
- char anon_data[100][2048];
+ char anon_data[100][1024];
 
  sprintf(fname,"%s/%s",from,file);
  sprintf(out_file,"%s/%s",out_dir,file);
+ if(strcmp(out_file+strlen(out_file)-3,".gz")==0) out_file[strlen(out_file)-3]=0;
  char *type;
  type = (strcmp(subtype,"default")==0) ? category : subtype;
- // printf("\n-- anonymize: cat=%s subtype=%s type=%s [%s] ------\n",category,subtype,type,out_file);
+// printf("\n-- anonymize: cat=%s subtype=%s type=%s [%s] ------\n",category,subtype,type,out_file);
  // find subtype fields
  int i=0;
  char **category_fields=NULL;
@@ -929,29 +982,39 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
  	if(!strcmp(categories[i].name,type)){
 		category_fields = categories[i].field;
 		category_sep = categories[i].sep;
-		// printf("	field found! %s %d\n",type,i);
+//		printf("	field found!\n");
 		break;
 	};i++;
  };
  if(category_fields) {
  	char in_line[2048];
 	FILE *in,*out;
+	struct stat attr;
+	stat(fname,&attr);
+	int file_seconds = attr.st_mtime;
+	float days_old=(now_seconds-file_seconds)/86400.0;
+	// printf("Last modified time: %s days = %f \n", ctime(&attr.st_mtime),days_old);
+	if(days_old > last_days) {
+		printf("skip %s mod %f, access %f, status %f\n",fname,days_old, (now_seconds-attr.st_atime)/86400.0,(now_seconds-attr.st_ctime)/86400.0);
+		return;
+	}
+	set_gunzipped(fname);	// gunzip to /tmp and return the temp file name
 	// printf("anon file: %s\n",fname);
+	// return;
 	in = fopen(fname,"r");
 	out = fopen(out_file,"w+");
-	int count1;
-	for(int i=0;category_fields[i];i++) count1=i;
+	int count1,i;
+	for(i=0;category_fields[i];i++) count1=i;
 	int line=0;
 	while(fgets(in_line,2048,in)) {
 		char last_char=in_line[strlen(in_line)-1];
-		// printf("[%s]\n",in_line);
 		if(last_char<32)
 		in_line[strlen(in_line)-1]=0; // remove newline
 
 		char **out_array;
 		int count=0;
 		out_array = split_str_sarray(in_line,category_sep,&count);
-		// print_sarray(stdout,out_array,category_sep);
+//		print_sarray(stdout,out_array,category_sep);
 //		printf("allocate %d\n",count);
 		line++;
 		if(count!=count1) {
@@ -971,12 +1034,11 @@ void anonymize_file(char *from,char *file,char *out_dir,char *category,char *sub
 	};
 	fclose(in);
 	fclose(out);
-	struct stat t;
-	stat(fname,&t);
-	long int old_size = t.st_size;
-	stat(out_file,&t);
-	long int new_size = t.st_size;
-	printf (" > %s size = %ld -> %ld\n",file,old_size,new_size);
+	stat(fname,&attr);
+	long int old_size = attr.st_size;
+	stat(out_file,&attr);
+	long int new_size = attr.st_size;
+	printf (" > %s oldsize = %ld new_size = %ld\n",file,old_size,new_size);
 	
  } else {
  	printf("Skip category %s subtype %s\n",category,subtype);
@@ -1028,9 +1090,13 @@ int main(int argc,char **argp)
 	free_sarray(a);
 	return 0;
 #endif
-
+	if(argc>1) {
+		last_days=atoi(argp[1]);
+	};
+	printf("Convert the last %d days\n",last_days);
 	bt_field_table=new_btree("table",0);
-	for(int i=0;field_types[i].name;i++) {
+	int i;
+	for(i=0;field_types[i].name;i++) {
 		set_btival(bt_field_table,field_types[i].name,field_types[i].type);
 	};
 
@@ -1041,6 +1107,10 @@ int main(int argc,char **argp)
 	printf("anon [%s]-> [%s]\n",test,anon);
 	return 1;
 #endif
+// get current time
+	struct timeval      timev;
+	gettimeofday(&timev, NULL);
+	now_seconds = (int)timev.tv_sec;
 
 // initialize anonymized directory
 	sprintf(s,"rm -rf %s >/dev/null 2>/dev/null",anon_log_dir);
@@ -1049,14 +1119,17 @@ int main(int argc,char **argp)
 	int max_category=0;
 	char **categories = get_dir(log_dir,&max_category);
 	// for each category!
-	for(int category_i=0;category_i<max_category;category_i++) {
+	int category_i;
+	for(category_i=0;category_i<max_category;category_i++) {
 		int max_subtypes=0;
+		if(!valid_log(categories[category_i])) continue;
 		sprintf(subtype_dir,"%s/%s/queue",log_dir,categories[category_i]);
 		char **subtypes = get_dir(subtype_dir,&max_subtypes);
 //		printf("# %s -> %s %d subtypes\n",categories[i],subtype_dir,subtypes_num);
 #if	1
-		for(int subtype_i=0;subtype_i<max_subtypes;subtype_i++) {
-		printf("# %s %s\n",categories[category_i],subtypes[subtype_i]);
+		int subtype_i;
+		for(subtype_i=0;subtype_i<max_subtypes;subtype_i++) {
+//			printf("# %s %s\n",categories[category_i],subtypes[subtype_i]);
 			sprintf(archive_dir,"%s/%s/archive",subtype_dir,subtypes[subtype_i]);
 //			printf(" :  %s\n",archive_dir);
 			sprintf(anon_archive_dir,"%s/%s/queue/%s/archive",anon_log_dir,categories[category_i],subtypes[subtype_i]);
@@ -1064,10 +1137,11 @@ int main(int argc,char **argp)
 			// create dir			
 			sprintf(s,"mkdir -p %s",anon_archive_dir);
 			result=system(s);
-			printf(" -> %s\n",anon_archive_dir);
+//			printf(" -> %s\n",anon_archive_dir);
 			int max_archive=0;
 			char **archives = get_dir(archive_dir,&max_archive);
-			for(int l=0;l<max_archive;l++) {
+			int l;
+			for(l=0;l<max_archive;l++) {
 				anonymize_file(archive_dir,archives[l],anon_archive_dir,categories[category_i],subtypes[subtype_i]);
 			};clear_snames(archives,max_archive);
 		};
@@ -1078,8 +1152,9 @@ int main(int argc,char **argp)
 		sprintf(category_dir,"%s/%s",log_dir,categories[category_i]);
 		int max_cat_files=0;
 		char **category_files = get_dir(category_dir,&max_cat_files);
-		printf("	check %s %d\n",category_dir,max_cat_files);
-		for(int cat_file_i=0;cat_file_i<max_cat_files;cat_file_i++) {
+		// printf("	check %s %d\n",category_dir,max_cat_files);
+		int cat_file_i;
+		for(cat_file_i=0;cat_file_i<max_cat_files;cat_file_i++) {
 			char fdname[1024];
 			sprintf(fdname,"%s/%s",category_dir,category_files[cat_file_i]);
 			stat(fdname,&t);
@@ -1092,7 +1167,8 @@ int main(int argc,char **argp)
 					int done0_max;
 					char **done0_contents = get_dir(fdname,&done0_max);
 					char done0_file[1024];
-					for(int done0_i=0;done0_i<done0_max;done0_i++){
+					int done0_i;
+					for(done0_i=0;done0_i<done0_max;done0_i++){
 						char done0_name[1024];
 						sprintf(done0_name,"%s/%s",fdname,done0_contents[done0_i]);
 						printf("  - %s\n",done0_name);
@@ -1102,7 +1178,8 @@ int main(int argc,char **argp)
 							int done1_max=0;
 							char **done1_contents = get_dir(done0_name,&done1_max);
 							printf("    convert files in subdir %s %d files\n",done0_name,done1_max);
-							for(int done1_i=0;done1_i<done1_max;done1_i++) {
+							int done1_i;
+							for(done1_i=0;done1_i<done1_max;done1_i++) {
 								anon_done(done0_name,done1_contents[done1_i]);
 							};
 							// clear_snames(done1_contents,done1_max);

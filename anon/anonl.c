@@ -1,7 +1,7 @@
 /*
 		Anonymize logs
 */
-#define	version "c 1.4.3"
+#define	version "c 1.4.4"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,6 +85,7 @@ enum {
 
 const unsigned char *anon_generic (const char *v, const char *chars[], int max, const char *except, int start,const char *ignore_begin,int in_char);
 const unsigned char *arand_digits (const char *v, int start1, char *check1,int start2, char *check2);
+const unsigned char *mask_string (const char *v, int start, char mask_char);
 
 typedef struct FIELD_TYPE
 {
@@ -649,6 +650,27 @@ const unsigned char *arand_digits (const char *v, int start1,char *check1,int st
  return (unsigned char *)anon_str;
 }
 
+// mask string with specific char. preserve first 'start', preserve length.
+const unsigned char *mask_string(const char *v, int start, char mask_char)
+{
+ static char anon_str[1024];
+ int len=strlen(v);
+ if(len>1023) len=1023;
+ int ind=0;
+ int preserve_bytes=0;
+ for(ind=0;ind<start;ind++) {
+ 	preserve_bytes += utf8_len((unsigned char *)(v+preserve_bytes));
+	// printf("%d\n",preserve_bytes);
+ };
+ if(len>preserve_bytes) {
+ 	memcpy(anon_str,v,preserve_bytes);
+	memset(anon_str+preserve_bytes,mask_char,len-preserve_bytes);
+	anon_str[len]=0;
+	// printf("%s -> [%s] start=%d len=%d preserve=%d\n",v,anon_str,start,len,preserve_bytes);
+	return (unsigned char *)anon_str;
+ } else return v;
+}
+
 // v -> input string
 // chars -> array with output chars
 // exept -> string with chars to not convert
@@ -725,12 +747,15 @@ const unsigned char *anon_generic (const char *v, const char *chars[], int max,c
  return (unsigned char *)anon_str;
 }
 
-const unsigned char *anon_string1(const char *v)
-{
-	return anon_generic(v,unum_digits,MAX_UNUM_DIGITS,".@/",0,"",0);
-}
 
 // Νομός Αττικής - ΦΥΛΑΚΕΣ ΚΟΡΥΔΑΛΛΟΥ ΑΝΔΡΩΝ (Γ)ΠΤΕΡΥΓΑ ΙΣΟΓΕΙΟ ΑΡΙΣΤΕΡΑ 
+const unsigned char *anon_string1(const char *v)
+{
+	return mask_string(v,2,'*');
+	// return anon_generic(v,unum_digits,MAX_UNUM_DIGITS,".@/",0,"",0);
+}
+
+#if	NUSE
 const unsigned char *anon_string(const char *v)
 {
  static char anon_str[1024];
@@ -783,12 +808,14 @@ const unsigned char *anon_string(const char *v)
 // printf("\n::> %s -> %s\n",v,anon_str);
  return (unsigned char *)anon_str;
 }
+#endif
 
 const unsigned char *anon_email1(const char *v)
 {
 	return anon_generic(v,canum_digits,MAX_ANUM_DIGITS,"@.",0,"",0);
 }
 
+#if	NUSE
 const unsigned char *anon_email(const char *v)
 {
  static char anon_str[1024];
@@ -829,6 +856,7 @@ const unsigned char *anon_email(const char *v)
 // printf("> %s -> %s\n",v,anon_str);
  return (unsigned char *)anon_str;
 }
+#endif
 
 const unsigned char *anon_ipv4(const char *v)
 {
@@ -1174,6 +1202,11 @@ int main(int argc,char **argp)
 	printf("%s\n",check4);
 	print_sarray(stdout,a,"|");
 	free_sarray(a);
+	return 0;
+#endif
+#if	TEST0
+	char *in = "ΑΒΓδεζηθικλ 1213213";
+	mask_string(in,3,'#');
 	return 0;
 #endif
 	if(argc>1) {

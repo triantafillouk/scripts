@@ -1,7 +1,7 @@
 /*
 		Anonymize logs
 */
-#define	version "c 1.4.4"
+#define	version "c 1.4.5"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -123,8 +123,8 @@ const char *unum_digits[] = {"0","1","2","3","4","5","6","7","8","9",
 };
 
 const char *category_names[] = {
-	// "email","chronocard","ict","ict_csv","itu_csv","oss","radius","telecard","udcs","udcslike",
-	"gprs","h_msc","mms","sms_gprs","tap_in","v_msc","w_msc","orig_sms",
+	"email","chronocard","ict","ict_csv","itu_csv","oss","radius","telecard","udcs","udcslike",
+	"gprs","h_msc","mms","sms_gprs","tap_in","v_msc","w_sms","orig_sms",
 	NULL
 };
 
@@ -146,14 +146,14 @@ FIELD_TYPE field_types[] = {
 {"parsed"				, T_NONE  },	// 8,9 or 2 or 11, 15 ...
 {"service"				, T_NONE  },	// 0
 {"prefix"				, T_NONE  },	// 16032
-{"number"				, T_PHONE_G },	// 00171########, 69########, 13888
+{"number"				, T_NONE  },	// 00171########, 69########, 13888
 {"logfile_line"			, T_NONE  },	// 1234
 {"mailserver_name"		, T_NONE  },	// pop03, rigel
 {"mailserver_type"		, T_NONE  },	// dovecot, amavis, postfix-smtpd ..
 {"queue"				, T_NONE  },	// F40D81D0008C (hex number)
 {"session"				, T_NONE  },	// d60EqHemurbDqgAq
-{"message_id"			, T_STRING},	// 3d9c2dc4-974a-4a9f-b6b1-22be8164481e_ebd4bd83-cd01-4832-bd87-5397606fcf28_20200525112519@brandsgalaxy.gr
-{"resent_message_id"	, T_STRING},	// 
+{"message_id"			, T_NONE  },	// 3d9c2dc4-974a-4a9f-b6b1-22be8164481e_ebd4bd83-cd01-4832-bd87-5397606fcf28_20200525112519@brandsgalaxy.gr
+{"resent_message_id"	, T_NONE  },	// 
 {"sender"				, T_EMAIL },	// notification@facebookmail.com
 {"receiver"				, T_EMAIL },	// vm1977@otenet.gr
 {"user"					, T_EMAIL },	// empty, xxxxx@xxx.com
@@ -1185,7 +1185,7 @@ int main(int argc,char **argp)
 	int result=0;
 	struct stat t;
 	char *single_category=NULL;
-	long int max_limit=2000000000;	// 2GB
+	long int max_limit=1000000000;	// 2GB
 #if	TEST0
 	while(int i=0;categories[i].name !=NULL;i++) {
 		printf("%2d name=[%s] field [",i,categories[i].name);
@@ -1264,6 +1264,7 @@ int main(int argc,char **argp)
 		int subtype_i;
 		for(subtype_i=0;subtype_i<max_subtypes;subtype_i++) {
 			long int file_size=0;
+			category_size=0;
 //			printf("# %s %s\n",categories[category_i],subtypes[subtype_i]);
 			sprintf(archive_dir,"%s/%s/archive",subtype_dir,subtypes[subtype_i]);
 //			printf(" :  %s\n",archive_dir);
@@ -1299,7 +1300,7 @@ int main(int argc,char **argp)
 		for(cat_file_i=0;cat_file_i<max_cat_files;cat_file_i++) {
 			char fdname[1024];
 			long int file_size=0;
-
+			category_size=0;
 			sprintf(fdname,"%s/%s",category_dir,category_files[cat_file_i]);
 			stat(fdname,&t);
 			// printf("	file: %s\n",category_files[cat_file_i]);

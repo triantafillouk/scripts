@@ -1,8 +1,7 @@
 /*
 		Anonymize logs
-		version 1.4.6 changed number scramble algorithm. At the begining of the number 3069 is preserved, 69 is preserved
 */
-#define	version "c 1.4.6"
+#define	version "c 1.4.6 fix"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,12 +23,19 @@ int now_seconds=0;	// current time epoq seconds
 double  last_days=1000.0;
 
 #define TEST	1
+#define FIX		1
+
 #if	ON_PROD
 char *log_dir = "/logs";
 char *anon_log_dir = "/logs/anonymous_logs_c";
 #else
+#if	FIX
+char *log_dir = "anonymous_logs_c";
+char *anon_log_dir = "anonymous_logs_c_fixed";
+#else
 char *log_dir = "logs";
 char *anon_log_dir = "anonymous_logs_c";
+#endif
 #endif
 
 
@@ -124,8 +130,9 @@ const char *unum_digits[] = {"0","1","2","3","4","5","6","7","8","9",
 };
 
 const char *category_names[] = {
-	"email","chronocard","ict","ict_csv","itu_csv","oss","radius","telecard","udcs","udcslike",
-	"gprs","h_msc","mms","sms_gprs","tap_in","v_msc","w_sms","orig_sms",
+	"chronocard","gprs","udcs","udsclike","ict",
+	// "itu_csv","email","chronocard","ict","ict_csv","oss","radius","w_sms","orig_sms","telecard",
+	// "gprs","h_msc","mms","sms_gprs","tap_in","v_msc","w_sms","orig_sms",
 	NULL
 };
 
@@ -437,14 +444,31 @@ const unsigned char *anon_idnum1(const char *v)
 
 const unsigned char *anon_a_number(const char *v)
 {
-	unsigned const char *v1 = arand_digits(v,6,"00302",4,"3069",2,"69");
+	unsigned const char *v1 = arand_digits(v,6,"00302",0,NULL,0,NULL);
 	return v1;
 }
 
 const unsigned char *anon_b_number(const char *v)
 {
-	unsigned const char *v1 = arand_digits(v,5,"00302",6,"00306",2,"69");
+	unsigned const char *v1 = arand_digits(v,5,"00302",6,"00306",0,NULL);
 	return v1;
+}
+
+const unsigned char *anon_number_fix(const char *v)
+{
+	// unsigned const char *v1 = arand_digits(v,5,"00302",6,"00306",0,NULL);
+	static char anon_str[1024];
+	anon_str[0]=0;
+	if(v==0) return (unsigned char *)anon_str;
+
+	if(strncmp(v,"4531",4)==0) { 
+		sprintf(anon_str,"3069%s",v+4);
+		printf("	v [%s] -> [%s]\n",v,anon_str);
+	} else if(strncmp(v,"31",2)==0) {
+		sprintf(anon_str,"69%s",v+2);
+		printf("	v [%s] -> [%s]\n",v,anon_str);
+	} else strcpy(anon_str,v);
+	return (unsigned char *)anon_str;
 }
 
 const unsigned char *anon_g_number(const char *v)
@@ -452,7 +476,6 @@ const unsigned char *anon_g_number(const char *v)
 	unsigned const char *v1 = arand_digits(v,6,"0030",4,"30",2,"69");
 	return v1;
 }
-
 
 const unsigned char *anon_preserve8(const char *v)
 {
@@ -876,19 +899,19 @@ const unsigned char *anon_ipv6(const char *v)
 
 const unsigned char *(*anon_function1[])(const char *c) = {
 	anon_none,
-	anon_anum1,
-	anon_a_number,
-	anon_b_number,
-	anon_g_number,
-	anon_preserve5,
-	anon_preserve8,
-	anon_string1,
-	anon_email1,
-	anon_idnum1,
-	anon_ipv4,
-	anon_ipv6,
-	anon_idhex1,
-	anon_domain
+	anon_none,
+	anon_number_fix,
+	anon_number_fix,
+	anon_number_fix,
+	anon_none,
+	anon_none,
+	anon_none,
+	anon_none,
+	anon_none,
+	anon_none,
+	anon_none,
+	anon_none,
+	anon_none
 };
 
 const char *anonymize_field(char *f,char *field_name)
@@ -1061,7 +1084,7 @@ CAT_DEFINITION categories[] = {
 	{NULL,NULL,NULL          } 
 };
 
-long int anonymize_file(char *from,char *file,char *out_dir,char *category,char *subtype)
+long int anonymize_file(char *from,char *file,char *out_dir,char *category,char *subtype,int show_test)
 {
  char fname[1024];
  char out_file[1024];
@@ -1104,7 +1127,7 @@ long int anonymize_file(char *from,char *file,char *out_dir,char *category,char 
 	// printf("anon file: %s\n",fname);
 	// return;
 	in = fopen(fname,"r");
-	out = fopen(out_file,"w+");
+	if(!show_test) out = fopen(out_file,"w+");
 	int count1,i;
 	for(i=0;category_fields[i];i++) count1=i;
 	int line=0;
@@ -1132,10 +1155,12 @@ long int anonymize_file(char *from,char *file,char *out_dir,char *category,char 
 			strcpy(anon_data[i],anonymize_field(out_array[i],category_fields[i]));;
 			anon_array[i]=anon_data[i];
 		};anon_array[i]=NULL;
-		print_sarray(out,anon_array,category_sep);
+		if(!show_test) print_sarray(out,anon_array,category_sep);
 	};
 	fclose(in);
+	if(!show_test) {
 	fclose(out);
+	sync();
 	stat(fname,&attr);
 	long int old_size = attr.st_size;
 	stat(out_file,&attr);
@@ -1150,13 +1175,16 @@ long int anonymize_file(char *from,char *file,char *out_dir,char *category,char 
 	stat(cmd,&attr);
 	printf("  > gzipped size %ld\n",attr.st_size);
 	return attr.st_size;
+	} else {
+		return 0;
+	};
  } else {
  	printf("Skip category %s subtype %s\n",category,subtype);
  };
  return 0;
 }
 
-long int anon_done(char *source_dir,char *fname)
+long int anon_done(char *source_dir,char *fname,int show_test)
 {
  char anon_archive_dir[1024];
  int count;
@@ -1168,7 +1196,7 @@ long int anon_done(char *source_dir,char *fname)
  sprintf(command,"mkdir -p %s",anon_archive_dir);
  result=system(command);
 	// printf("	%d : anon_done: -> %s %s\n",result,anon_archive_dir,fname);
-	file_size=anonymize_file(source_dir,fname,anon_archive_dir,fa[1],fa[2]);
+	file_size=anonymize_file(source_dir,fname,anon_archive_dir,fa[1],fa[2],show_test);
 	// printf("	!!!ok\n");
 	return file_size;
 }
@@ -1186,7 +1214,8 @@ int main(int argc,char **argp)
 	int result=0;
 	struct stat t;
 	char *single_category=NULL;
-	long int max_limit=1000000000;	// 2GB
+	long int max_limit=9000000000;	// 2GB
+	int show_test = 0;
 #if	TEST0
 	while(int i=0;categories[i].name !=NULL;i++) {
 		printf("%2d name=[%s] field [",i,categories[i].name);
@@ -1271,15 +1300,17 @@ int main(int argc,char **argp)
 //			printf(" :  %s\n",archive_dir);
 			sprintf(anon_archive_dir,"%s/%s/queue/%s/archive",anon_log_dir,categories[category_i],subtypes[subtype_i]);
 			printf("# in %s\n",archive_dir);
-			// create dir			
-			sprintf(s,"mkdir -p %s",anon_archive_dir);
-			result=system(s);
+			// create dir
+			if(!show_test) {
+				sprintf(s,"mkdir -p %s",anon_archive_dir);
+				result=system(s);
+			};
 //			printf(" -> %s\n",anon_archive_dir);
 			int max_archive=0;
 			char **archives = get_dir(archive_dir,&max_archive);
 			int l;
 			for(l=0;l<max_archive;l++) {
-				file_size=anonymize_file(archive_dir,archives[l],anon_archive_dir,categories[category_i],subtypes[subtype_i]);
+				file_size=anonymize_file(archive_dir,archives[l],anon_archive_dir,categories[category_i],subtypes[subtype_i],show_test);
 				category_size += file_size;
 				if(category_size > max_limit) {
 					printf("----->>> size limit break %s\n",size2str(category_size));
@@ -1290,7 +1321,7 @@ int main(int argc,char **argp)
 		};
 		clear_snames(subtypes,max_subtypes);
 #endif
-#if	1
+#if	0
 		char category_dir[1024];
 		sprintf(category_dir,"%s/%s",log_dir,categories[category_i]);
 		int max_cat_files=0;
@@ -1326,7 +1357,7 @@ int main(int argc,char **argp)
 							printf("    convert files in subdir %s %d files\n",done0_name,done1_max);
 							int done1_i;
 							for(done1_i=0;done1_i<done1_max;done1_i++) {
-								file_size = anon_done(done0_name,done1_contents[done1_i]);
+								file_size = anon_done(done0_name,done1_contents[done1_i],show_test);
 								category_size += file_size;
 								if(category_size > max_limit) {
 									printf("----->>> size limit break %s\n",size2str(category_size));
@@ -1335,7 +1366,7 @@ int main(int argc,char **argp)
 							};
 							// clear_snames(done1_contents,done1_max);
 						} else {
-							file_size = anon_done(fdname,done0_contents[done0_i]);
+							file_size = anon_done(fdname,done0_contents[done0_i],show_test);
 							category_size += file_size;
 							if(category_size > max_limit) {
 								printf("----->>> size limit break %s\n",size2str(category_size));

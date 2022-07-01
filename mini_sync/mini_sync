@@ -1,1 +1,1 @@
-python3 /usr/local/bin/mini_sync.py $1
+python3 /usr/local/bin/mini_sync2.py $1 $2

@@ -1,4 +1,6 @@
 # mini_sync
+# version 1.1
+
 import subprocess
 import json
 import os.path

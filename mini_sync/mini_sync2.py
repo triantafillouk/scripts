@@ -1,5 +1,5 @@
 # mini_sync
-# version 1.1
+# version 1.2
 
 import subprocess
 import json
@@ -14,8 +14,9 @@ def push_name(name):
     from_dir = local_root+"/"+name
     tmp1 = name.split("/",10)
     if len(tmp1) > 1:
+        to_dir = remote_root
         for i in range(0,len(tmp1)-1):
-            to_dir = remote_root+"/"+tmp1[i]
+            to_dir = to_dir+"/"+tmp1[i]
     else:
         to_dir = remote_root
     print("--- Push "+name+" to "+to_dir+" host "+remote_host+" ----------------")
@@ -35,8 +36,9 @@ def pull_name(name):
     tmp1 = name.split("/",10)
 
     if len(tmp1) > 1:
+        to_dir = local_root
         for i in range(0,len(tmp1)-1):
-            to_dir = local_root+"/"+tmp1[i]
+            to_dir = to_dir+"/"+tmp1[i]
     else:
         to_dir = local_root
     print("--- Pull "+name+" to "+to_dir+" from host "+remote_host+" ----------------")

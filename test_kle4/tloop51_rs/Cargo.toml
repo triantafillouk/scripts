@@ -1,0 +1,10 @@
+[package]
+name = "tloop51"
+version = "0.1.0"
+authors = ["Kostas Triantafyllou <kntriant@gmail.com>"]
+
+[dependencies]
+
+[[bin]]
+name = "tloop51"
+path = "tloop51.rs"

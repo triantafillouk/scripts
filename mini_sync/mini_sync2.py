@@ -1,11 +1,12 @@
 # mini_sync
-# version 1.2
 
+version="1.3"
 import subprocess
 import json
 import os.path
 import time
 from os import path
+from os import environ
 import s_time
 import sys
 
@@ -63,6 +64,7 @@ if len(sys.argv) < 2:
     print(" mini_sync pull")
     print(" mini_sync push")
     print(" mini_sync show")
+    print(" mini_sync edit")
     sys.exit(1)
 
 if len(sys.argv) == 3:
@@ -103,9 +105,9 @@ with open(list_file,'r') as f:
         check_only = conf_names["check_only"]
 
     dirs = conf_data[1]
-    
-    
+
 if command == "show":
+    print("mini_sync version ",version)
     print("Local root : ",local_root)
     print("remote root: ",remote_root)
     print("remote host: ",remote_host)
@@ -116,6 +118,15 @@ if command == "show":
     s.show_time("end",0)
     sys.exit(0)
 
+if command == "edit":
+    cmd = os.environ.get("EDITOR")
+    list_file = os.getenv("HOME")+"/.mini_sync/dirs_list.json"
+    if cmd:
+        cmd = cmd+" "+list_file
+    else:
+        cmd = "vi "+list_file
+    subprocess.run(cmd,shell=True)
+        
 if command == "pull":
     s.show_time("start pulling",0)
     print("Pulling")

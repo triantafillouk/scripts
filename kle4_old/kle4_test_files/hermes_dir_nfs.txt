@@ -1,0 +1,265 @@
+total 376278
+-rw-r--r--  1 65534  1000    668583 Dec 15  2008 816-1613-15.pdf
+-rw-r--r--  1 65534  1000     89600 Mar 15  2010 A096 EBHLE DPA 30 KVA.DOC
+-rw-r--r--  1 65534  1000     81396 Sep  4  2007 ASTE-6Z6JX7_R0_EN.pdf
+-rw-r--r--  1 65534  1000    164864 Aug 29  2008 Availability_hermes.xls
+-rw-r--r--  1 65534  1000     85504 Sep 10  2007 Availability_test(1).xls
+-rw-r--r--  1 65534  1000    165376 Jun  8  2008 BOM_equipment_Final_260508.xls
+-rw-r--r--  1 65534  1000    120320 Jun 19  2008 BOM_λογισμικο_no_prices.xls
+-rw-r--r--  1 65534  1000    296426 Jun  4  2008 C1429253- GR-Unisystems -ERMIS - Implementation Services_20080604.pdf
+-rw-r--r--  1 65534  1000    579106 Jun 20  2008 C1429253_GR_ERMIS Web Portal_SOW_v1_20080604.pdf
+-rw-r--r--  1 65534  1000   2890240 Oct 31  2008 Configuration Guide.doc
+-rw-r--r--  1 65534  1000  11986398 May 15  2009 DOCUMENTATION.zip
+-rw-r--r--  1 65534  1000     25600 Oct 29  2009 Document Scrap 'nCipher DSE200...'.shs
+-rw-r--r--  1 65534  1000     26112 Oct 14  2009 Document Scrap 'Ξ— Ο„Ξ­Ο„Ξ±ΟΟ„Ξ· Ο‡ΟΞ·ΟƒΞΉΞΌ...'.shs
+-rw-r--r--  1 65534  1000    238592 May 27  2008 Drawing1 new.vsd
+-rw-r--r--  1 65534  1000    159232 May 26  2008 ERMHS 25_5_08_V1.mpp
+-rw-r--r--  1 65534  1000    245760 Jun  5  2008 ERMHS 25_5_08_V2.mpp
+-rw-r--r--  1 65534  1000    417857 Oct 16  2009 ERMHS_DISASTER RECOVERY PLAN V2.0.zip
+-rw-r--r--  1 65534  1000   1224704 Oct 29  2009 ERMHS_DISASTER RECOVERY PLAN V3.0.doc
+-rw-r--r--  1 65534  1000   1052672 Nov  4  2009 ERMHS_DISASTER RECOVERY PLAN V3.0f.doc
+-rw-r--r--  1 65534  1000    629760 Dec 21  2011 ERMHS_DISASTER RECOVERY PLAN V3.0f1.doc
+-rw-r--r--  1 65534  1000        26 Dec 21  2011 ERMHS_DISASTER RECOVERY PLAN V3.0f1.doc:Zone.Identifier
+-rw-r--r--  1 65534  1000     34304 Jun 26  2008 ERMIS 23June2008 - Fax from Unisystems to Lorenzo Lumassi.doc
+-rw-r--r--  1 65534  1000     82432 Oct 31  2008 ERMIS_Configuration Guide_database.doc
+-rw-r--r--  1 65534  1000     22528 Sep  7  2007 ERMIS_SYSTEMS_NETWORK_SCHEDULE_ergatovres.xls
+-rw-r--r--  1 65534  1000     27648 Jun 19  2008 ERMIS_Solaris_RAC.doc
+-rw-r--r--  1 65534  1000   4448256 May 19  2008 ERMIS_meleti_efarmogis_16-5-08.doc
+-rw-r--r--  1 65534  1000   2451205 May 20  2008 Ermis High Level Architecture.jpg
+-rw-r--r--  1 65534  1000    651264 May 20  2008 Ermis High Level Architecture.vsd
+-rw-r--r--  1 65534  1000    138266 Sep  7  2009 Ermis High Level Architecture2.jpg
+-rw-r--r--  1 65534  1000    714240 Sep  7  2009 Ermis High Level Architecture2.vsd
+-rw-r--r--  1 65534  1000     45568 Oct 17  2008 Ermis_Communications_matrix.xls
+-rw-r--r--  1 65534  1000     51751 Apr  2  2008 FW HERMES- SUN installation services.htm
+-rw-r--r--  1 65534  1000     90701 Jul  1  2008 FW Θέματα ΕΡΜΗ.htm
+-rw-r--r--  1 65534  1000    919040 Aug 29  2007 INITTimeSchedule_v6.mpp
+-rw-r--r--  1 65534  1000   3389952 Sep 30  2008 Network-topology.ppt
+-rw-r--r--  1 65534  1000    905216 Dec 19  2008 Pack2-4.vsd
+-rw-r--r--  1 65534  1000     29696 Mar  3  2008 Rack&Power calc v.2.xls
+-rw-r--r--  1 65534  1000     38400 May 29  2008 SE_SCHEDULE.xls
+-rw-r--r--  1 65534  1000    262144 Oct 15  2008 SITE_VISIT_REPORT_ermis V2.doc
+-rw-r--r--  1 65534  1000     10827 Dec 16  2008 Simple.pm
+-rw-r--r--  1 65534  1000    107520 Dec 21  2011 StorageTek 6140_desc.doc
+-rw-r--r--  1 65534  1000        26 Dec 21  2011 StorageTek 6140_desc.doc:Zone.Identifier
+-rw-r--r--  1 65534  1000    694784 Mar 16  2009 Sxediagrama.vsd
+-rw-r--r--  1 65534  1000     40167 May 29  2008 Symantec ESSENTIAL Support - Datasheet ENG.pdf
+-rw-r--r--  1 65534  1000     41984 Sep  5  2007 TOC_B_ΕΡΜΗΣ.doc
+-rw-r--r--  1 65534  1000   1823496 Dec 12  2008 TeamViewer_Setup.exe
+-rw-r--r--  1 65534  1000     57032 Jun 26  2008 Unisystems-MinistryOfInterior-MF0608002v02.pdf
+-rw-r--r--  1 65534  1000     17408 May 28  2008 VERITAS.xls
+-rw-r--r--  1 65534  1000   2554720 Jan 16  2007 a_ypogeio.dwg
+-rw-r--r--  1 65534  1000     51790 May 12  2008 a_ypogeio_dwg.jpg
+-rw-r--r--  1 65534  1000    105924 Sep  7  2009 aksonasAB.jpg
+-rw-r--r--  1 65534  1000    731648 Sep  7  2009 aksonasAB.vsd
+-rw-r--r--  1 65534  1000    110480 Sep  7  2009 aksonasC.jpg
+-rw-r--r--  1 65534  1000    720896 Sep  7  2009 aksonasC.vsd
+-rw-r--r--  1 65534  1000     98213 Sep 13  2007 b_ypogeio.dwg
+-rw-r--r--  1 65534  1000     13330 Jun 17  2009 bg-header.gif
+drwxr-xr-x  3 65534  1000        40 Feb 17 01:15 bugs
+-rw-r--r--  1 65534  1000    204800 Feb  9  2009 check_interface_table.tar
+-rw-r--r--  1 65534  1000       625 Feb  9  2009 check_multisvc.cfg
+-rw-r--r--  1 65534  1000      5611 Feb  9  2009 check_multisvc.pl
+-rw-r--r--  1 65534  1000      2781 Feb  9  2009 check_multisvc.tgz
+-rw-r--r--  1 65534  1000     29696 Dec  3  2008 clima_off_calculation.xls
+-rw-r--r--  1 65534  1000      5612 Feb  9  2009 cluster_percent.pl
+-rw-r--r--  1 65534  1000     28002 Nov  3  2008 computer_room.jpg
+-rw-r--r--  1 65534  1000    176128 Nov  3  2008 computer_room.vsd
+drwxr-xr-x  3 65534  1000        42 Feb 17 01:15 daily
+-rw-r--r--  1 65534  1000  23461005 Apr 12  2010 develop_messages_120410.log
+-rw-r--r--  1 65534  1000     29696 Oct  8  2009 disaster1.doc
+-rw-------  1 65534  1000       873 Sep 19  2009 dns-syzefxis.txt
+-rw-r--r--  1 65534  1000       922 Jan 30  2009 dns_mail_16122008.txt
+drwxr-xr-x  3 65534  1000       113 Feb 17 01:15 dr
+-rw-r--r--  1 65534  1000     38912 Oct  6  2009 ecm_dri.xls
+drwxr-xr-x  5 65534  1000      4096 Feb 17 01:15 ekpaideysi
+drwxr-xr-x  3 65534  1000      4096 Feb 17 01:15 epektasi
+drwxr-xr-x  3 65534  1000       114 Feb 17 01:15 ermis-ports
+-rw-r--r--  1 65534  1000    102912 Nov 27  2008 ermis-syzefxis.doc
+-rw-r--r--  1 65534  1000     20480 Jan 30  2009 ermis-syzefxis1.doc
+-rw-r--r--  1 65534  1000     18432 Feb  2  2009 ermis-syzefxis3.doc
+-rw-r--r--  1 65534  1000     18432 Feb  2  2009 ermis-syzefxis4.doc
+-rw-r--r--  1 65534  1000       107 Jun 24  2008 ermis.txt
+-rw-r--r--  1 65534  1000        66 Jun 24  2008 ermis2.txt
+-rw-r--r--  1 65534  1000       103 Jun 24  2008 ermis3.txt
+-rw-r--r--  1 65534  1000    355328 Dec  3  2008 ermis_clima1off.doc
+-rw-r--r--  1 65534  1000     19456 Dec 15  2011 ermis_disaster.doc
+-rw-r--r--  1 65534  1000     19456 Sep 29  2009 ermis_disaster1.doc
+-rw-r--r--  1 65534  1000     37888 Jan 29  2009 ermis_extended.xls
+-rw-r--r--  1 65534  1000     14848 Mar 11  2010 ermis_incident_100310.doc
+-rw-r--r--  1 65534  1000     15360 Mar 11  2010 ermis_incident_100310_logs.doc
+-rw-r--r--  1 65534  1000    112128 Dec 15  2008 ermis_power_consuption.xls
+-rw-r--r--  1 65534  1000   1551872 Apr 15  2009 ermis_rack1.vsd
+-rw-r--r--  1 65534  1000   1541632 Apr 15  2009 ermis_rack2.vsd
+-rw-r--r--  1 65534  1000   1538048 Apr 15  2009 ermis_rack3.vsd
+-rw-r--r--  1 65534  1000   1646080 Apr 15  2009 ermis_rack4.vsd
+-rw-r--r--  1 65534  1000   1547776 Apr 15  2009 ermis_rack5.vsd
+-rw-r--r--  1 65534  1000   1711616 Sep  7  2009 ermis_rack6.vsd
+-rw-r--r--  1 65534  1000   1540608 Apr 15  2009 ermis_rack7.vsd
+-rw-r--r--  1 65534  1000   2285056 Sep 30  2008 ermis_racks_k2.vsd
+-rw-r--r--  1 65534  1000   2426368 Apr 15  2009 ermis_racks_k3.vsd
+-rw-r--r--  1 65534  1000   2476544 Apr 22  2009 ermis_racks_k4.vsd
+-rw-r--r--  1 65534  1000   1777664 Jul  4  2008 ermis_racks_kt1.vsd
+-rw-r--r--  1 65534  1000     35201 Jan 22  2009 ermis_storage.txt
+-rw-r--r--  1 65534  1000     41970 Jan 22  2009 ermis_storage1.txt
+-rw-r--r--  1 65534  1000      9384 Jan 22  2009 ermis_storage3.txt
+-rw-r--r--  1 65534  1000   2292224 Nov  4  2008 ermis_tekmiriosi_egkatastasis.doc
+-rw-r--r--  1 65534  1000   2300416 Nov 17  2008 ermis_tekmiriosi_egkatastasis1.doc
+-rw-r--r--  1 65534  1000   2503168 Oct 12  2009 ermis_tekmiriosi_egkatastasis2.doc
+-rw-r--r--  1 65534  1000   8557056 Oct 14  2009 ermis_tekmiriosi_egkatastasis4.doc
+-rw-r--r--  1 65534  1000     49993 Sep  1  2008 error_prtlas1.txt
+-rw-r--r--  1 65534  1000   3239095 Aug 19  2008 explorer.84aeece6.prtlas1-2008.08.19.09.44.tar.gz
+-rw-r--r--  1 65534  1000    433664 Jun 11  2008 fiber_interconnection2.vsd
+-rw-r--r--  1 65534  1000    480256 Jul  3  2008 fiber_interconnection4.vsd
+-rw-r--r--  1 65534  1000    479232 Sep  7  2009 fiber_interconnection5.vsd
+-rw-r--r--  1 65534  1000    478208 Oct 13  2009 fiber_interconnection6.vsd
+-rw-r--r--  1 65534  1000   1321795 May 30  2008 fiber_interconnections1.jpg
+-rw-r--r--  1 65534  1000    435200 May 30  2008 fiber_interconnections1.vsd
+-rw-r--r--  1 65534  1000     72691 Sep  7  2009 fibernet.jpg
+-rw-r--r--  1 65534  1000    305152 Sep  7  2009 fibernet.vsd
+-rw-r--r--  1 65534  1000   5477376 Sep  7  2009 hardware-architecture1.ppt
+-rw-r--r--  1 65534  1000   3746304 Sep  8  2009 hardware-architecture2.ppt
+-rw-r--r--  1 65534  1000   1354240 May 30  2008 hermes_db_architecture.doc
+-rw-r--r--  1 65534  1000   1477387 Jul  3  2008 hermes_interconnections.jpg
+-rw-r--r--  1 65534  1000      1061 Jul 31  2008 hermes_log.txt
+-rw-r--r--  1 65534  1000       793 Apr 13  2010 hermes_mpath.txt
+-rw-r--r--  1 65534  1000     36165 Sep  5  2008 hermes_partitions.txt
+-rw-r--r--  1 65534  1000       146 Jul  3  2008 hermes_programs.txt
+-rw-r--r--  1 65534  1000     54272 Jun 18  2008 hermes_racks_lanports.xls
+-rw-r--r--  1 65534  1000    160256 Jun 20  2008 hermes_racks_lanports1.xls
+-rw-r--r--  1 65534  1000    148480 Sep 30  2008 hermes_racks_lanports10.xls
+-rw-r--r--  1 65534  1000     57856 Jul  7  2008 hermes_racks_lanports11.xls
+-rw-r--r--  1 65534  1000    147968 Oct 20  2008 hermes_racks_lanports12.xls
+-rw-r--r--  1 65534  1000     79360 Nov  4  2008 hermes_racks_lanports13.xls
+-rw-r--r--  1 65534  1000    193024 Jan 23  2009 hermes_racks_lanports14.xls
+-rw-r--r--  1 65534  1000     92160 Mar 24  2009 hermes_racks_lanports15.xls
+-rw-r--r--  1 65534  1000     94208 Apr 14  2009 hermes_racks_lanports16.xls
+-rw-r--r--  1 65534  1000    104448 Sep  7  2009 hermes_racks_lanports17.xls
+-rw-r--r--  1 65534  1000     97280 May  6  2010 hermes_racks_lanports18.xls
+-rw-r--r--  1 65534  1000     99328 Apr 19  2010 hermes_racks_lanports19.xls
+-rw-r--r--  1 65534  1000     33792 Jun 13  2008 hermes_racks_lanports2.xls
+-rw-r--r--  1 65534  1000     57856 Jul  7  2008 hermes_racks_lanports21.xls
+-rw-r--r--  1 65534  1000     74440 Jul  1  2008 hermes_racks_lanports3.pdf
+-rw-r--r--  1 65534  1000    144384 Jul  8  2008 hermes_racks_lanports3.xls
+-rw-r--r--  1 65534  1000    146944 Jul 16  2008 hermes_racks_lanports4.xls
+-rw-r--r--  1 65534  1000    147456 Jul 28  2008 hermes_racks_lanports5.xls
+-rw-r--r--  1 65534  1000    139776 Jul 29  2008 hermes_racks_lanports6.xls
+-rw-r--r--  1 65534  1000    199168 Sep  9  2008 hermes_racks_lanports7.xls
+-rw-r--r--  1 65534  1000     73216 Sep 24  2008 hermes_racks_lanports9.xls
+-rw-r--r--  1 65534  1000    130560 Jun 20  2008 hermes_racks_lanports_kosmas.xls
+-rw-r--r--  1 65534  1000    125952 May 29  2008 hermes_servers.xls
+-rw-r--r--  1 65534  1000       174 Jul 22  2008 hermes_telephones.txt
+-rw-r--r--  1 65534  1000   3778560 Sep 30  2008 hermis_physiki.doc
+-rw-r--r--  1 65534  1000      2834 Jul 30  2008 hosts
+-rw-r--r--  1 65534  1000       132 Jul 28  2008 ifconfig.sh
+-rw-r--r--  1 65534  1000       318 Aug 29  2008 iff.pl
+-rw-r--r--  1 65534  1000        84 Aug 29  2008 iff.sh
+-rw-r--r--  1 65534  1000    241752 Feb  9  2009 imagepak-cook.tar.gz
+-rw-r--r--  1 65534  1000    190876 Mar 22  2010 incident100310.txt
+-rw-r--r--  1 65534  1000     27565 Apr 17  2010 incident_100410.txt
+drwxr-xr-x  3 65534  1000        39 Feb 17 01:15 init_services
+-rw-r--r--  1 65534  1000      1551 Aug 27  2008 insident2.txt
+-rw-r--r--  1 65534  1000     20480 May 26  2008 installation-hours.xls
+-rw-r--r--  1 65534  1000     92229 Sep  7  2009 kep_logical.jpg
+-rw-r--r--  1 65534  1000    595456 Sep  7  2009 kep_logical.vsd
+-rw-r--r--  1 65534  1000       106 Mar 23  2009 keprac1_oradb.txt
+-rw-r--r--  1 65534  1000      8580 May 15  2010 keprnew.sh
+-rw-r--r--  1 65534  1000    738282 Jul 16  2008 klimatistika.dwg
+-rw-r--r--  1 65534  1000      3051 Jan 23  2009 l500_problem.txt
+-rw-r--r--  1 65534  1000       727 Mar 22  2010 logs_logs.txt
+-rw-r--r--  1 65534  1000       780 Feb  9  2009 my_nagios_check.pl
+drwxr-xr-x  6 65534  1000      4096 Feb 17 01:15 nagios
+-rw-r--r--  1 65534  1000      6598 Feb  9  2009 nagios_small_utils.html
+drwxr-xr-x  3 65534  1000       131 Feb 17 01:15 nagios_small_utils_files
+-rw-r--r--  1 65534  1000      1283 Nov 28  2008 nagios_sun.txt
+-rw-r--r--  1 65534  1000     43227 Feb 28  2008 named.conf.triantafylloy
+-rw-r--r--  1 65534  1000       352 Oct  2  2008 nb.txt
+-rw-r--r--  1 65534  1000      1411 Jul 15  2008 nbu_license.txt
+-rw-r--r--  1 65534  1000    865280 Oct 15  2008 net-design-3.vsd
+-rw-r--r--  1 65534  1000    183848 Oct 15  2008 net-design-total3.jpg
+-rw-r--r--  1 65534  1000       132 Aug 26  2008 netprofile_home.sh
+-rw-r--r--  1 65534  1000        62 Feb  4  2009 new_rules.txt
+-rw-r--r--  1 65534  1000       672 Oct 22  2008 oraapps.xml
+-rw-r--r--  1 65534  1000      4467 Jul 14  2008 oracle.txt
+-rw-r--r--  1 65534  1000      4462 Jul 14  2008 oracle1.txt
+-rw-r--r--  1 65534  1000    102400 Nov  6  2008 oracle_access_list.doc
+-rw-r--r--  1 65534  1000     26845 Jun 24  2008 partitions.txt
+-rw-r--r--  1 65534  1000       603 Mar 23  2009 passwd.tdc
+drwxr-xr-x  3 65534  1000        46 Feb 17 01:15 power_generator
+-rw-r--r--  1 65534  1000      3594 Aug 27  2008 problem1.txt
+-rw-r--r--  1 65534  1000       280 Aug 27  2008 problem2.txt
+-rw-r--r--  1 65534  1000      1551 Aug 27  2008 problem3.txt
+-rw-r--r--  1 65534  1000    523264 Oct 15  2008 progress_report_uat.doc
+-rw-r--r--  1 65534  1000      7168 Dec  4  2008 prtlas_sync.tar
+-rw-r--r--  1 65534  1000      2810 Jul 29  2008 quests@prtlas1
+-rw-r--r--  1 65534  1000     10089 Sep  5  2008 rac.txt
+-rw-r--r--  1 65534  1000       972 Jan 16  2009 rac3-4.txt
+-rw-r--r--  1 65534  1000      8798 Jan 23  2009 rac3_4.txt
+-rw-r--r--  1 65534  1000         1 Jan 20  2009 rac_partitions.txt
+-rw-r--r--  1 65534  1000       759 Sep 16  2008 roberto.txt
+-rw-r--r--  1 65534  1000     10609 Sep  8  2008 sccli.help
+-rw-r--r--  1 65534  1000     27648 Sep  5  2007 schedule Εγκατάσταση network.doc
+drwxr-xr-x  5 65534  1000      4096 Feb 17 01:15 security
+-rw-r--r--  1 65534  1000    363520 Aug 29  2008 senaria_dokimon_hermes.doc
+-rw-r--r--  1 65534  1000       277 Mar 22  2010 serial_nums.txt
+-rw-r--r--  1 65534  1000      2282 Jul 14  2008 servers_setup_needed.txt
+-rw-r--r--  1 65534  1000       594 Feb  6  2009 sophos.txt
+-rw-r--r--  1 65534  1000       206 Jul 29  2008 static_routes.txt
+-rw-r--r--  1 65534  1000    104661 Feb  9  2009 statusmap.cgi.png
+drwxr-xr-x  3 65534  1000        84 Feb 17 01:15 storage
+-rw-r--r--  1 65534  1000     12524 Jan 22  2009 storage1.log
+-rw-r--r--  1 65534  1000     13600 Jan 19  2009 storage2.txt
+-rw-r--r--  1 65534  1000     20134 Jan 22  2009 storage_status_210109.txt
+-rw-r--r--  1 65534  1000     19792 Jan 22  2009 storage_status_44_210109.txt
+-rw-r--r--  1 65534  1000      7922 Jun 30  2008 storagetek.txt
+drwxr-xr-x  3 65534  1000        77 Feb 17 01:15 sun
+-rw-r--r--  1 65534  1000     76904 Jul 11  2008 symantec_hermes_4500256225a.pdf
+drwxr-xr-x  3 65534  1000        74 Feb 17 01:15 syslog
+-rw-r--r--  1 65534  1000   4917339 Oct 16  2009 tekmiriosi2.zip
+-rw-r--r--  1 65534  1000   2657280 Nov  3  2008 tekmiriosi_egkatastasis.doc
+-rw-r--r--  1 65534  1000   4231168 Nov  4  2008 tekmiriosi_egkatastasis1.doc
+-rw-r--r--  1 65534  1000        39 Jan 23  2009 telephone.txt
+-rw-r--r--  1 65534  1000    183808 May 21  2009 template.doc
+drwxr-xr-x  3 65534  1000      4096 Feb 17 01:15 tests
+-rw-r--r--  1 65534  1000       328 Sep 15  2008 to_install_agents.txt
+-rw-r--r--  1 65534  1000     20799 Jan 20  2009 top_luns.txt
+-rw-r--r--  1 65534  1000    120320 Feb  2  2009 tsirigoti_mail.doc
+-rw-r--r--  1 65534  1000     43008 Feb  2  2009 tsirigoti_mail1.doc
+-rw-r--r--  1 65534  1000     81953 Oct 18  2009 tz10f.jpg
+-rw-r--r--  1 65534  1000    546421 Jun  9  2008 ultdrv.pdf
+-rw-------  1 65534  1000         0 Sep 19  2009 utf8-Ξ±Ξ²Ξ³Ξ΄ΞµΞ¶Ξ·ΞΈΞΉΞΊΞ»ΞΌΞ½ΞΎΞΏΟ€ΟΟƒΟ„Ο…Ο‡Ο†Ξ³Ο.txt
+-rw-r--r--  1 65534  1000      5592 Apr  3  2009 vrac.txt
+drwxr-xr-x  3 65534  1000        83 Feb 17 01:15 win_syslog
+-rw-r--r--  1 65534  1000     22528 Jan 30  2009 ΑΝΑΚΟΙΝΩΣΗ ΓΙΑ ΑΝΟΙΧΤΗ ΣΥΖΗΤΗΣΗ_ΚΥΘΝΟ.doc
+-rw-r--r--  1 65534  1000   2308096 May 20  2008 Αρχιτεκτονική ΕΡΜΗ.doc
+-rw-r--r--  1 65534  1000    176640 Nov 25  2008 Διαδικασία Διαχείρισης Ενημερώσεων της Πληροφοριακής Υποδομής.doc
+-rw-r--r--  1 65534  1000     35840 Sep  7  2007 ΕΝΔΕΙΚΤΙΚΑ ΦΟΡΤΙΑ COMPUTER ROOM ERMHS.doc
+-rw-r--r--  1 65534  1000     68096 May 26  2008 ΕΠΙΚΑΙΡΟΠΟΙΜΕΝΟ BOM_equipment_Final.xls
+-rw-r--r--  1 65534  1000   1519616 Dec  5  2008 ΕΡΜΗΣ - Σενάρια Δοκιμών v3 0.doc
+-rw-r--r--  1 65534  1000    167424 Oct  6  2008 ΕΡΜΗΣ Template Σεναρίων Δοκιμών v2.doc
+-rw-r--r--  1 65534  1000    102400 Oct 15  2008 ΕΡΜΗΣ Template Σεναρίων Δοκιμών v21.doc
+-rw-r--r--  1 65534  1000    102400 Oct 31  2008 ΕΡΜΗΣ Template Σεναρίων Δοκιμών v211.doc
+-rw-r--r--  1 65534  1000    167936 Oct 15  2008 ΕΡΜΗΣ Template Σεναρίων Δοκιμών v221.doc
+-rw-r--r--  1 65534  1000    234496 Oct 15  2008 ΕΡΜΗΣ Πινακας Αποτελεσμάτων Σεναρίων Δοκιμών v2.doc
+-rw-r--r--  1 65534  1000    140288 Oct 15  2008 ΕΡΜΗΣ Πινακας Αποτελεσμάτων Σεναρίων Δοκιμών v3.doc
+-rw-r--r--  1 65534  1000     23552 Jun 16  2009 Κοστολόγηση ΕΡΜΗΣ επιπλέον εργασίες  (2).xls
+-rw-r--r--  1 65534  1000    514048 Aug 30  2007 Μεθοδολογία Υλοποίησης κ Ελεγχων.doc
+-rw-r--r--  1 65534  1000     43520 Sep  7  2007 Μεθοδολογία Υλοποίησης κ Ελεγχων_NETWOR_KEF_3.doc
+-rw-r--r--  1 65534  1000     71680 Mar 19  2010 Ξ£Ξ¥ΞΞ’Ξ‘Ξ ermis 10032010.doc
+-rw-r--r--  1 65534  1000   4294422 Dec 21  2011 Ξ•ΞΈΞ½ΞΉΞΊΞ® Ξ ΟΞ»Ξ· Ξ•Ξ΅ΞΞ—Ξ£ Ξ¤ΞµΞΊΞΌΞ·ΟΞ―Ο‰ΟƒΞ· Ξ•Ξ³ΞΊΞ±Ο„Ξ¬ΟƒΟ„Ξ±ΟƒΞ·Ο‚ V2.rar
+-rw-r--r--  1 65534  1000        26 Dec 21  2011 Ξ•ΞΈΞ½ΞΉΞΊΞ® Ξ ΟΞ»Ξ· Ξ•Ξ΅ΞΞ—Ξ£ Ξ¤ΞµΞΊΞΌΞ·ΟΞ―Ο‰ΟƒΞ· Ξ•Ξ³ΞΊΞ±Ο„Ξ¬ΟƒΟ„Ξ±ΟƒΞ·Ο‚ V2.rar:Zone.Identifier
+-rw-r--r--  1 65534  1000     30208 Dec  2  2010 Ξ±Ξ΄ΞµΞΉΞµΟ‚_ΞµΞΉΟƒΞΏΞ΄ΞΏΟ…_ΞΊΟ„Ο€_122010.xls
+-rw-r--r--  1 65534  1000  10046976 Nov  6  2008 Ξ¤ΞµΞΊΞΌΞ·ΟΞ―Ο‰ΟƒΞ· ΞµΞ³ΞΊΞ±Ο„Ξ¬ΟƒΟ„Ξ±ΟƒΞ·Ο‚ v1_0.doc
+-rw-r--r--  1 65534  1000  16088064 Oct 16  2009 Ξ¤ΞµΞΊΞΌΞ·ΟΞ―Ο‰ΟƒΞ· ΞµΞ³ΞΊΞ±Ο„Ξ¬ΟƒΟ„Ξ±ΟƒΞ·Ο‚ v2_0.doc
+-rw-------  1 65534  1000    118272 Sep 19  2009 Ξ•ΞΊΞΊΟΞµΞΌΟΟ„Ξ·Ο„ΞµΟ‚_Ξ•Ξ΅ΞΞ—_160909.doc
+-rw-r--r--  1 65534  1000    149504 Oct 21  2009 Ξ•ΞΊΞΊΟΞµΞΌΟΟ„Ξ·Ο„ΞµΟ‚_Ξ•Ξ΅ΞΞ—_160909_answers_kt.doc
+-rw-r--r--  1 65534  1000     56525 Mar 19  2010 ΞµΟ€ΞΉΟƒΟ…Ξ½Ξ±Ο€Ο„ΟΞΌΞµΞ½Ξ±.zip
+-rw-r--r--  1 65534  1000   1058816 Nov  6  2008 Πίνακες Σεναρίων Δοκιμών v2.4_Σχόλια.doc
+-rw-r--r--  1 65534  1000   1058816 Nov 27  2008 Πίνακες Σεναρίων Δοκιμών v2.4_Σχόλια_ΕΠΠΕ.doc
+-rw-r--r--  1 65534  1000    722774 Sep 10  2008 Πλάνο Εκπαίδευσης.zip
+-rw-r--r--  1 65534  1000   2198528 Sep 10  2008 Πλάνο_Εκπαίδευσης.doc
+-rw-r--r--  1 65534  1000     35840 Sep  5  2007 ΤΕΚΜΗΡΙΩΣΗ ΠΡΟΣΦΕΡΟΜΕΝΗΣ ΤΕΧΝΟΛΟΓΙΚΗΣ ΥΠΟΔΟΜΗΣ.doc
+-rw-r--r--  1 65534  1000   3968000 Oct 20  2008 ΤΕΧΝΙΚΗ ΠΡΟΣΦΟΡΑ ΕΡΜΗΣ- ΚΕΠ v 2 5.doc
+-rw-r--r--  1 65534  1000    212480 Oct 31  2008 Τεκμηρίωση ασφάλειας solaris-sophos.doc
+-rw-r--r--  1 65534  1000    304128 Oct 30  2008 Τεκμηρίωση ασφάλειας.doc
+-rw-r--r--  1 65534  1000    358912 Feb 11  2009 ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΥΛΟΠΟΙΗΣΗΣ ΕΡΓΩΝ ΕΡΜΗΣ-ΚΕΠ.doc
+-rw-r--r--  1 65534  1000    100352 Nov 27  2008 ενέργειες αναδόχου επί παρατηρήσεων ΟΕ σενάριων δοκιμών.doc

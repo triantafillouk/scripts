@@ -1,0 +1,85 @@
+# Some utf-8 character groups and relative info used for testing.
+
+0x41 - 0x5A <> 0x61 - 0x7A	(A-Z,a-z)	+0x20	basic latin
+0xC380 - 0xC39E <> 0xC3A0 - 0xC39E		+0x20	accent latin1
+	except 0xC397 <> 0xC3B7, (multiply, divide)
+0xC480 - 0xC588, 0xC58C - 0xC5BD (+,-1) 	accented latin letters
+0xC680 - 0xC685					 (+,-1)
+0xC784 - 0xC8BB					 (+,-1)
+
+# modifiers
+0xCAB0 - 0xCBBF
+
+# combining U+300
+0xCC80 - 0xCDAF
+
+# greek
+0xCDB0 <> 0xCDB1	(Heta)
+0xCDB2 <> 0xCDB3	(Sampi)
+0xCDB6 <> 0xCDB7	(Pamphylian diggama)
+# accented greeks
+0xCE86 <> 0xCEAC	(A) <> ά
+0xCE88 <> 0xCEAD	(E) <> έ
+0xCE89 <> 0xCEAE	(H) <> ή
+0xCE8A <> 0xCEAF	(I) <> ί
+0xCE8c <> 0xCF8C	(O) <> ό
+0xCE8E <> 0xCF8D	(Y) <> ύ
+0xCE8f <> 0xCF8E	(Ω) <> ώ
+
+0xCE90 <>			(΄¨ι)
+0xCE84 	greek tonos
+0xCE95	greek dialytika tonos
+0xCE87	greek ano teleia
+
+# Greek letters
+0xCE91 - 0xCEA9 <> 0xCEB1 - 0xCF89	(Α-Ω) <> (α-ω)
+0xCF82 = small final ς
+0xCEAA <> 0xCF8A 		(Ϊ) ϊ
+0xCEAB <> 0xCF8B		(Ϋ) ϋ
+
+# Coptic
+0xCF98 - 0xCFAE		(+,-1)
+0xCFB7 <> 0xCFB8	(Ϸ <> ϸ)
+
+0xCFBA <> 0xCFBB	(Ϻ <> ϻ)
+# Cyrilic	
+0xD080 - ỽ
+₠
+₤
+₯
+e2 83 90 - e2 83 b0	Combining characters
+← →
+∑∏∞
+∫≈≤≥
+│┧╳╭╮
+   ╰╯
+ ► 
+U+25B2  ▲   e2 96 b2 
+U+25BC	▼	e2 96 bc	BLACK DOWN-POINTING TRIANGLE
+
+U+25B8	▸	e2 96 b8	BLACK RIGHT-POINTING SMALL TRIANGLE
+U+25BE	►	e2 96 be	BLACK DOWN-POINTING SMALL TRIANGLE
+U+25C4	◄	e2 97 84	BLACK LEFT-POINTING POINTER
+
+U+25BE	▽	e2 96 be	BLACK DOWN-POINTING SMALL TRIANGLE
+U+25C2	◂	e2 97 82	BLACK LEFT-POINTING SMALL TRIANGLE
+
+U+25CA	◊	e2 97 8a	LOZENGE
+U+25CB	○	e2 97 8b	WHITE CIRCLE
+U+25CC	◌	e2 97 8c	DOTTED CIRCLE
+○◉
+◅◄◁◀
+▾▽▼
+▻►▷▶
+▲▲
+▣
+😀😊🗜 🗂
+🖼
+🖖 spok
+
+🀓
+
+🛧
+
+🩆
+976:   976 | 0x3D0 | 0o1720	ϐ

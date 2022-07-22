@@ -1,0 +1,108 @@
+
+# notepad++ Shortcuts
+
+Control
+^A		select all
+^B		matching brace
+	^ Alt B 	select all between branches
+^C		copy
+Alt C	column editor
+^D		dublicate current line
+^F		search
+	F3	find next
+	shift F3		find previous
+	^F3			select and find next
+	^ shift F3	select and find previous
+	F4		next search result
+	shift F4	previous search result
+^ shift F		find in files
+^G		goto
+^H		replace
+^ Alt I	Incremental search
+^I		split lines
+^J		join lines
+
+^N		new file
+^O 		open file
+^P		print
+
+^S			save
+^Alt S		save as
+
+^V		paste
+^W		close
+^X		cut
+^Y		redo
+^Z		undo
+———————————
+
+^ shift T 		restore recent closed file
+Alt F4		exit
+
+find in all opened windows -> new window
+find all in current document -> new window
+
+^F2		Toggle bookmark
+F2		next bookmark
+Shift F2	Previous bookmark
+
+F8		focus on another view
+ALT H	hide lines
+ALT 0 	fold all
+ALT shift 0	unfold all
+^ Alt F		collapse current level
+^ Alt shift F	uncollapse current level
+
+^ num +		zoom in (current window)
+^ num -		zoom out
+
+move to other view
+clone to other view
+move to new instance
+open in new instance
+
+^ num 1		1st tab
+^ num 2		2nd tab
+…
+^ page down		next tab
+^ page up		previous tab
+^ Shift page down 	move tab forward
+^ shift page up		move tab backward
+
+summary info for a file !
+monitorig (like tail -f)
+synchronize vertical/horizontal scrolling
+margin numbers, tree, 
+recent files history
+file association editing
+tab size, replace by space
+
+highlight match/no match case
+backup
+auto completion (function and word completion)
+Document switcher (^TAB)
+
+Encoding
+ANSI, UTF-8, UTF8-BOM, UCS-2 BE BOM, UCS-2 LE BOM
+convert to
+	ANSI, UTF-8, UCS-2 BE BOM, UCS-2 LE BOM
+
+character sets
+	greek  : ISO8859-7, OEM737, OEM869, windows 1253
+	…
+
+Highlight languages 
+	… 
+Define Language
+- keywords 8 groups
+- Line comment position (Allow anywhere, force at the begining, allow preceding whitespace)
+- Allow folding of comments
+- Deciman separator
+- Operators and delimiters
+- ignore case
+
+
+Preferences
+- small, big icons
+- hide toolbar
+- multiline tab bar, or not, vertical

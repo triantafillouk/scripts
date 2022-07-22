@@ -1,0 +1,62 @@
+total 372016
+-rw-r--r--  1 kt  staff    579106 Jun 20  2008 C1429253_GR_ERMIS Web Portal_SOW_v1_20080604.pdf
+-rw-r--r--  1 kt  staff   2890240 Oct 31  2008 Configuration Guide.doc
+-rw-r--r--  1 kt  staff     25600 Oct 29  2009 Document Scrap 'nCipher DSE200...'.shs
+-rw-r--r--  1 kt  staff     26112 Oct 14  2009 Document Scrap 'Η τέταρτη χρησιμ...'.shs
+-rw-r--r--  1 kt  staff     68096 May 26  2008 ŐɊIяЏɌōϠBOM_equipment_Final.xls
+-rw-r--r--  1 kt  staff    905216 Dec 19  2008 Pack2-4.vsd
+-rw-r--r--  1 kt  staff     29696 Mar  3  2008 Rack&Power calc v.2.xls
+-rw-r--r--  1 kt  staff     20480 May 26  2008 installation-hours.xls
+-rw-r--r--  1 kt  staff    176640 Nov 25  2008 ĩᤩꡳߡ ĩᷥ߱鳧򠅭笥񾳥#966B.doc
+-rw-r--r--  1 kt  staff    176640 Nov 25  2008 ĩᤩߡ ĩ
+1	2	3
+鳧
+0򠅭1
+笥񾳥#966B.doc
+	1	2	3	4	5	6	7	8	9	0	1	2	3	4
+鳧笥鳧笥鳧笥鳧笥鳧笥鳧笥鳧"笥笥"	1234567890----------
+鳧笥鳧笥鳧笥鳧笥鳧笥鳧笥鳧笥笥11    1234567890----------
+
+			"笥笥"
+            笥笥11
+	"笥笥"
+	笥笥111	2	3	4	5	6	7	8	9	0"笥笥"
+E9... is it right ot left lang??             笥笥11
+EA not existent count as 1
+F2 >>
+E7 is ok! (2)
+שלום!123  -  שלום
+-rw-r--r--  1 kt  staff     92229 Sep  7  2009 kep_logical.jpg
+-rw-r--r--  1 kt  staff    102400 Nov  6  2008 oracle_access_list.doc
+-rw-r--r--  1 kt  staff     35840 Sep  7  2007 ōąɊԉʁ ֏єɁ COMPUTER ROOM ERMHS.doc kt  staff 
+-rw-r--r--  1 kt  staff     26845 Jun 24  2008 partitions.txt                    kt  staff 
+-rw-------  1 kt  staff         0 Sep 19  2009 utf8-αβγδεζηθικλμνξοπρστυχφγψ.txt kt  staff 
+-rw-r--r--  1 kt  staff      5592 Apr  3  2009 vrac.txt                          kt  staff 
+drwxr-xr-x  1 kt  staff       264 Feb 17 01:15 win_syslog
+-rw-r--r--  1 kt  staff     23552 Jun 16  2009 ʯ󴯫#960A.xls
+-rw-r--r--  1 kt  staff     35840 Sep  5  2007 ԅʌǑəӇ Бϓօя̅Ӡԅ׍ϋσɊǓ ՐτόǓ.doc (len of D78D is 0 display len!!)
+-rw-r--r--  1 kt  staff   3968000 Oct 20  2008 ԅ׍ɊǠБϓ֏с ő̇ӭ ʅРv 2 5.doc
+-rw-r--r--  1 kt  staff     71680 Mar 19  2010 ΣΥΜΒΑΝ ermis 10032010.doc
+-rw-r--r--  1 kt  staff     30208 Dec  2  2010 αδειες_εισοδου_κτπ_122010.xls
+-rw-r--r--  1 kt  staff   4294422 Dec 21  2011 Εθνική Πύλη ΕΡΜΗΣ Τεκμηρίωση Εγκατάστασης V2.rar
+-rw-r--r--  1 kt  staff        26 Dec 21  2011 Εθνική Πύλη ΕΡΜΗΣ Τεκμηρίωση Εγκατάστασης V2.rar#96F3.Iden
+
+-rw-r--r--  1 kt  staff   4294422 Dec 21  2011 Εθνική Πύλη ΕΡΜΗΣ Τεκμηρίωση Εγκατάστασης V2.rar
+-rw-r--r--  1 kt  staff        26 Dec 21  2011 Εθνική Πύλη ΕΡΜΗΣ Τεκμηρίωση Εγκατάστασης V2.rar#96F3.Iden
+
+-rw-r--r--  1 kt  staff    304128 Oct 30  2008 ԥ꬧񟹳砡󶜫婡򮤯c
+-rw-r--r--  1 kt  staff    212480 Oct 31  2008 ԥ꬧񟹳砡󶜫婡򠳯laris-sophos.doc
+1
+-rw-r--r--  1 kt  staff    722774 Sep 10  2008 Ы1
+-rw-r--r--  1 kt  staff  10046976 Nov  6  2008 Τεκμηρίωση εγκατάστασης v1_0.doc
+-rw-r--r--  1 kt  staff  16088064 Oct 16  2009 Τεκμηρίωση εγκατάστασης v2_0.doc
+-rw-------  1 kt  staff    118272 Sep 19  2009 Εκκρεμότητες_ΕΡΜΗ_160909.doc
+-rw-r--r--  1 kt  staff    149504 Oct 21  2009 Εκκρεμότητες_ΕΡΜΗ_160909_answers_kt.doc
+-rw-r--r--  1 kt  staff     56525 Mar 19  2010 επισυναπτόμενα.zip
+
+	"笥笥"
+    笥笥11"笥笥"
+          笥笥11"笥笥"
+                笥笥11"笥笥"
+                      笥笥11"笥笥"
+                            笥笥11

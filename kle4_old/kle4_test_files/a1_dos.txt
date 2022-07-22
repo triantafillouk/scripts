@@ -1,0 +1,39 @@
+/*
+	Curses,gtk editor,notes,directory browser
+	Copyright Kostas Triantafillou
+	GNU LESSER GENERAL PUBLIC LICENSE version 2 
+	(or at your option) any later version.
+
+	Link list (double linked lists) support functions
+*/
+@
+a=10	:  10.0
+@
+/* version 14/10/2020 */
+
+#include "alist.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#if	defined _MESG_DEFINED
+void MESG(const char *fmt, ...);
+#else
+#define MESG(format,...) { \
+    {\
+	fprintf(stderr, format, ##__VA_ARGS__);\
+    fputc('\n', stderr);\
+	}\
+}
+#endif
+
+int scmp(const char *s1,const char *s2)
+{
+	while(*s1 && *s1 == *s2){
+		s1++; s2++;
+	}
+	return (*s1 - *s2);
+}
+
+astack *new_astack(void *dat)
+{

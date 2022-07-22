@@ -1,0 +1,44 @@
+This is a test document for Apple's self-test suite. Saved on 10.3.3. 
+Some bold text. Some italic text. 
+# chinese 你好, japanese こんにちは, korean 여보세요
+ABCDEFGHIJKLMNOPQRSTUVWXYZ.
+abcdefghijklmnopqrstuvwxyz.
+The following are 1 char spaced chars
+E280A0	†,E288E9	∞,E280A2	•,E28093	–
+がぎぐげご
+濁点	Dakunen
+半濁点	Handakuten
+丸		maru
+0123456789.
+öüäçæéêƒ©† ¢∞§¶•ªº–—¡™£şğåŞĞÅČİŌƉƟ.
+АБВГДЕабвгде
+ΑΒΓΔΕΖαβγδεζ
+ℌ 	BCDEFGHIJKLMNOPQRSTUV
+℀1  bcdefghijklmnopqrstuv
+℉1  he following are 1 ch
+    280A0  †,E288E9    ∞,
+⅓⅔⅕℃℉
+ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ
+⇐⇑⇒⇓⇧⇪⊂⊃⊆⊇
+ファイルを開いた後ま
+のフ
+ァイルを開
+のファイルを
+のファイル
+ァァァ
+ァイ	イル
+apa     イル
+		apanese apanese apanese
+	    ァイルをァイルをァイルを
+Some Japanese text now:
+このファイルを開いた後または保存した後で、別のアプリケーションによって変更されています。
+このファイルを開いた後または保存した後で、別のアプリケーションによって変更されています。
+Same Japanese text, outlined:
+このファイルを開いた後または保存した後で、別のアプリケーションによって変更されています。
+Composed chars (304B 309A):
+かの
+か゚の
+NOTE: Glyph info test has been removed for now
+Link to Apple. 
+Last line, everything back to normal.
+

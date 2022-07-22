@@ -1,0 +1,7 @@
+# text with utf chars, and some (ISO8859 chars) appear with red color (in error)
+ΚΛΜ αβγ
+��������� 123456789
+çèხჴჯჰჵæ
+ხჴჯჰჵæçè
+æ
+this is '�' a 123

@@ -1,0 +1,42 @@
+GTK_LIBS = `gtk-config --libs`
+GTK_CFLAGS = `gtk-config --cflags`
+
+list.o: list.c list.h
+	gcc list.c -c -o list.o
+
+t1: t1.c
+	gcc t1.c -o t1  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
+
+cube: cube.c
+	gcc cube.c -o cube  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
+
+
+kcube: kcube.c list.o
+	gcc kcube.c -o kcube list.o  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
+
+transf: transf.c
+	gcc transf.c -o transf  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
+
+ballade: balade.c
+	gcc balade.c -o ballade  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
+
+teapot: teapot.c
+	gcc teapot.c -o teapot  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
+
+material1: material1.c
+	gcc material1.c -o material1  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -ljpeg -lm
+
+texture2: texture2.c
+	gcc texture2.c -o texture2  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -ljpeg -ltiff -lm
+
+terain: terain.c
+	gcc terain.c -o terain  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -ljpeg -ltiff -lm
+
+gears: gears.c
+	gcc gears.c -o gears  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -ljpeg -ltiff -lm
+
+
+cube_gtkgl: cube_gtkgl.c 
+	gcc cube_gtkgl.c -o cube_gtkgl ${GTK_CFLAGS} -L/usr/X11R6/lib -lGL -lGLU -lglut -lXmu -ljpeg -ltiff ${GTK_LIBS} -lgtkgl
+
+

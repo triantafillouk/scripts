@@ -1,15 +1,18 @@
 /********************************************************/
 /*                     kcube.c                           */
 /********************************************************/
-
+// with greek comments
 
 #include <GL/glut.h>
 #include <stdio.h>
+#include <math.h>
 #include "list.h"
+#include "3delements.h"
 
 
 /* function declarations */
 void iterate(object *ob);
+void idle();
 
 int iteration;
 int p_iteration; // previous iteration
@@ -48,7 +51,7 @@ object *new_object()
 {
  object *ob;
  static int id=0;
- printf("new_object: id=%d\n",id);
+// printf("new_object: id=%d\n",id);
  ob = (object *)malloc(sizeof(struct object));
  ob->id=id++;
  ob->planes = new_list(0);
@@ -208,7 +211,7 @@ void show_planes(object *ob)
  };
 }
 
-/* add a point at the end of the plane list
+/* add a point at the end of the plane list */
 /* returns an akmi in case of a connection */
 akmi * add_point_to_plane(point *p, plane *pla,object *ob)
 {
@@ -257,12 +260,12 @@ int  remove_point_from_plane(point *p, plane *pla)
 
 int remove_plane_from_akmi(plane *pla,akmi *a)
 {
-  
+   return 1;
 }
 
 int remove_akmi_from_point(akmi *a,point *p)
 {
-
+	return 1;
 }
 
 /* check if two akmes have a common plane */
@@ -372,25 +375,31 @@ point * new_barcentr(plane *pla,int it)
  point *p;
  int n=0;
  double x=0,y=0,z=0,r=0,g=0,b=0; 
+// printf("barycentric point of plane %d\n",pla->id);
  for(p=get_first_point(pla->pl);p!=NULL;p=get_next_point(pla->pl)) {
- 	if(p==(point *)pla->pl->last->data) break;
+ 	if(p==(point *)pla->pl->last->data && n>0) break;
 	x += p->x;
 	y += p->y;
 	z += p->z;
+//	 printf("x=%f y=%f z=%f\n",x,y,z);
 	r += p->r; g += p->g; b += p->b;
 	n++;
  };
  x /= n; y /= n; z /= n;
  r /= n; g /= n; b /= n;
  np = new_point(x,y,z,r,g,b,it);
+// printf("x=%f y=%f z=%f\n",x,y,z);
  return(np);
 }
 
 double dist_point_center_plane(point *p1,plane *pla)
 {
+ double d;
  point *p0;
- p0 = new_barcentr(pla,-1); 
- return(fdist(p0,p1));
+ p0 = new_barcentr(pla,-1);
+ d = fdist(p0,p1);
+// printf("distance of plane %d from 00 is %f\n",pla->id,d);
+ return(d);
 }
 
 /* returns a new point at distance dist from point p0 in the line p0-p1 */
@@ -416,7 +425,7 @@ point * new_point_fd(point *p0,point *p1, double dist,int it)
  return p2;
 }
 
-int insert_point_in_plane(point *m1,plane *pla,akmi *a)
+void insert_point_in_plane(point *m1,plane *pla,akmi *a)
 {
  point *p1,*p2;
 // printf("insert midpoint %d on plane %d from akmi %d (%d,%d)\n",m1->id,pla->id,a->id,a->p[0]->id,a->p[1]->id);
@@ -429,7 +438,12 @@ int insert_point_in_plane(point *m1,plane *pla,akmi *a)
 point *p00;	// zero point 
 double max_pdist=0;		// maximum point distance
 double min_pdist=10.0;	// minimum point distance
+double max_adist=0;		// center point distance
+double min_adist=10.0;
 int  show_sphere=1;
+int total_points=0;
+int total_akmes=0;
+int total_planes=0;
 
 point p_cube[8]={
     {-0.5,-0.5, 0.5 ,0.0,0.0,1.0,0},
@@ -485,10 +499,16 @@ object * new_cube()
 		// add the planes to the cube
 //		printf("add plane %d to cube\n",pla->id);
 		add_plane_to_list(pla,cube1->planes);
+
+		d = dist_point_center_plane(p00,pla);
+//		printf("plane %d dist %f\n",pla->id,d);
+		if(d>max_adist) max_adist=d;
+		if(d<min_adist) min_adist=d;
+		
  };
 // printf("all planes added!\n");
- show_planes(cube1);
- show_akmes(cube1);
+// show_planes(cube1);
+// show_akmes(cube1);
  printf("-------------------------------------------\n");
  return(cube1);
 }
@@ -516,21 +536,27 @@ object *cube0;
 
 int main(int argc,char **argv)
 {
+ char *window_title="ΞΟΞ²ΞΏΟ‚";
   anglex=20;// 20
   angley=10;// 10
   anglez=0;
   iteration=0;
+  p00 = new_point(0,0,0,0,0,0,-1);
   cube0=new_cube();
   cube1=new_cube();
+  total_points=8;
+  total_akmes=12;
+  total_planes=6;
   printf("max_pdist = %f, min_pdist=%f\n",max_pdist,min_pdist);
-
+  printf("max_adist = %f, min_adist=%f\n",max_adist,min_adist);
+  printf("----------------------------------\n");
 //  show_object_connections(cube1);
   /* initialisation of glut and window */
   glutInit(&argc,argv);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   glutInitWindowPosition(400,100);
   glutInitWindowSize(400,400);
-  glutCreateWindow("Κύβος");
+  glutCreateWindow(window_title);
 
   /* Initialisation d'OpenGL */
   glClearColor(0.0,0.0,0.0,0.0);
@@ -545,9 +571,11 @@ int main(int argc,char **argv)
   glutMouseFunc(mouse);
   glutMotionFunc(mousemotion);
   glutSpecialFunc(special);
+  glutTimerFunc(100,atimer,100);
+//  glutIdleFunc(idle);
 
   glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-
+ 
   /* Entree dans la boucle principale glut */
   glutMainLoop();
   return 0;
@@ -558,6 +586,7 @@ void display()
 {
   int i,j;
   /* clear with background color */
+//  printf("start drawing\n");
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
   glRotatef(-angley,1.0,0.0,0.0);
@@ -567,15 +596,16 @@ void display()
   draw_axis(2.0);
   draw_object(cube0);
   draw_object(cube1);
-
-  glColor3f(0.5,0.5,0.5);
-  glutWireSphere(0.5,50,50);
-
+  if(show_sphere) {
+  	glColor3f(0.5,0.5,0.5);
+  	glutWireSphere(0.5,50,50);
+  }
   glFlush();
   
   /* swap display buffers */
-  updatingf=0;
   glutSwapBuffers();
+  updatingf=0;
+//  printf("end drawing!\n");
 }
 
 void keyb(unsigned char key,int x,int y)
@@ -645,7 +675,7 @@ void atimer(int i)
  glutTimerFunc(i,atimer,i);
  if(updatingf!=1) {
  	updatingf=1;
-	printf("post redisplay!\n");
+//	printf("post redisplay!\n");
 	glutPostRedisplay();j=current;
  	
  }else {
@@ -749,6 +779,8 @@ void iterate(object *ob)
  /* set iteration number */
  p_iteration=iteration;
  iteration++;
+ max_pdist=0;
+ min_pdist=10;
  
 // show_akmes(ob);
  for(p0=get_first_point(ob->points);p0!=NULL;p0=get_next_point(ob->points)) {
@@ -756,30 +788,36 @@ void iterate(object *ob)
  };
 // show_object_connections(ob);
 
-// 1. Για κάθε σημείο P0 δημιουργούμε ένα νέο επίπεδο PLA0.
+// 1. Ξ“ΞΉΞ± ΞΊΞ¬ΞΈΞµ ΟƒΞ·ΞΌΞµΞ―ΞΏ P0 Ξ΄Ξ·ΞΌΞΉΞΏΟ…ΟΞ³ΞΏΟΞΌΞµ Ξ­Ξ½Ξ± Ξ½Ξ­ΞΏ ΞµΟ€Ξ―Ο€ΞµΞ΄ΞΏ PLA0.
  for(p0=get_first_point(ob->points);p0!=NULL;p0=get_next_point(ob->points)) {
+	double d;
  	if(p0->it == iteration) break;
  	pla0 = new_plane(iteration);
 	new_planes++;
 
-//	Το επίπεδο θα αποτελείται απο τα ενδιάμεσα σημεία του των ακμών  
-//	που σχηματίζουν(ενώνονται) το σημείο P0, άρα:
-//		Για κάθε ακμή που συνδέεται με το σημείο P0:
+//	Ξ¤ΞΏ ΞµΟ€Ξ―Ο€ΞµΞ΄ΞΏ ΞΈΞ± Ξ±Ο€ΞΏΟ„ΞµΞ»ΞµΞ―Ο„Ξ±ΞΉ Ξ±Ο€ΞΏ Ο„Ξ± ΞµΞ½Ξ΄ΞΉΞ¬ΞΌΞµΟƒΞ± ΟƒΞ·ΞΌΞµΞ―Ξ± Ο„ΞΏΟ… Ο„Ο‰Ξ½ Ξ±ΞΊΞΌΟΞ½
+//	Ο€ΞΏΟ… ΟƒΟ‡Ξ·ΞΌΞ±Ο„Ξ―Ξ¶ΞΏΟ…Ξ½(ΞµΞ½ΟΞ½ΞΏΞ½Ο„Ξ±ΞΉ) Ο„ΞΏ ΟƒΞ·ΞΌΞµΞ―ΞΏ P0, Ξ¬ΟΞ±:
+//		Ξ“ΞΉΞ¬ ΞΊΞ¬ΞΈΞµ Ξ±ΞΊΞΌΞ® Ο€ΞΏΟ… ΟƒΟ…Ξ½Ξ΄Ξ­ΞµΟ„Ξ±ΞΉ ΞΌΞµ Ο„ΞΏ ΟƒΞ·ΞΌΞµΞ―ΞΏ P0:
 		for(a0=a=get_first_akmi(p0->connected),p1=NULL,ap=NULL;a!=NULL;ap=a,a=get_next_akmi(p0->connected)) {
-//		- Δημιουργία του μεσαίου σημείου Μ1 (αν δεν έχει ήδη δημιουργηθεί!).
+//		- Ξ”Ξ·ΞΌΞΉΞΏΟ…ΟΞ³Ξ―Ξ± Ο„ΞΏΟ… ΞΌΞµΟƒΞ±Ξ―ΞΏΟ… ΟƒΞ·ΞΌΞµΞ―ΞΏΟ… Ξ1 (Ξ¬Ξ½ Ξ΄ΞµΞ½ Ξ­Ο‡ΞµΞΉ Ξ®Ξ΄Ξ· Ξ΄Ξ·ΞΌΞΉΞΏΟ…ΟΞ³Ξ·ΞΈΞµΞ―!).
 			if(a->midpoint == NULL) {
 				m1 = new_mid_point(a->p[0],a->p[1],iteration);
+
+				d = fdist(m1,p00);
+				if(d>max_pdist) max_pdist=d;
+				if(d<min_pdist) min_pdist=d;
+
 				new_points++;
 				a->midpoint = m1;
 				add_point_to_object(m1,ob);
 				a->f = 1;	// set the flag that we have proccessed the akmi 
-// 		- Για κάθε επίπεδο στο οποίο ανήκει η ακμή.
+// 		- Ξ“ΞΉΞ¬ ΞΊΞ¬ΞΈΞµ ΞµΟ€Ξ―Ο€ΞµΞ΄ΞΏ ΟƒΟ„ΞΏ ΞΏΟ€ΞΏΞ―ΞΏ Ξ±Ξ½Ξ®ΞΊΞµΞΉ Ξ· Ξ±ΞΊΞΌΞ®.
 				for(pla=get_first_plane(a->connected);pla!=NULL;pla=get_next_plane(a->connected)) {
-//		- εισαγωγη του Μ1 στο επίπεδο PLA αναμεσα στα 2 σημεια της ακμης
+//		- ΞµΞΉΟƒΞ±Ξ³Ο‰Ξ³Ξ® Ο„ΞΏΟ… Ξ1 ΟƒΟ„ΞΏ ΞµΟ€Ξ―Ο€ΞµΞ΄ΞΏ PLA Ξ±Ξ½Ξ¬ΞΌΞµΟƒΞ± ΟƒΟ„Ξ± 2 ΟƒΞ·ΞΌΞµΞ―Ξ± Ο„Ξ·Ο‚ Ξ±ΞΊΞΌΞ®Ο‚
 					insert_point_in_plane(m1,pla,a);
 				};
 			} else m1 = a->midpoint;
-//		- πρόσθεση του Μ1 στο PLA0.
+//		- Ο€ΟΟΟƒΞΈΞµΟƒΞ· Ο„ΞΏΟ… Ξ1 ΟƒΟ„ΞΏ PLA0
 			if(p1==NULL) p1=m1;	// store the first point of the plane
 			a1=add_point_to_plane(m1,pla0,ob);
 			if(a1) new_akmes++;
@@ -791,17 +829,22 @@ void iterate(object *ob)
 		new_akmes++;
 		add_side_plane_to_akmi(a1,ap,a0);
 //		printf("<%d>\n",p1->id);
+		d = dist_point_center_plane(p00,pla0);
+//		printf("plane %d dist %f\n",pla0->id,d);
+		if(d>max_adist) max_adist=d;
+		if(d<min_adist) min_adist=d;
+
 		add_plane_to_list(pla0,ob->planes);
  };
 // show_planes(ob);
-// 2. Αφαίρεση όλων των σημείων του προηγούμενου iteration από όλα τα επίπεδα (του προηγούμενου iteration).
+// 2. Ξ‘Ο†Ξ±Ξ―ΟΞµΟƒΞ· ΟΞ»Ο‰Ξ½ Ο„Ο‰Ξ½ ΟƒΞ·ΞΌΞµΞ―Ο‰Ξ½ Ο„ΞΏΟ… Ο€ΟΞΏΞ·Ξ³ΞΏΟ…ΞΌΞ­Ξ½ΞΏΟ… iteration Ξ±Ο€Ο ΟΞ»Ξ± Ο„Ξ± ΞµΟ€Ξ―Ο€ΞµΞ΄Ξ± (Ο„ΞΏΟ… Ο€ΟΞΏΞ·Ξ³ΞΏΟ…ΞΌΞ­Ξ½ΞΏΟ… iteration).
 	for(pla=get_first_plane(ob->planes);pla!=NULL;pla=get_next_plane(ob->planes)) {
 		for(p1=get_first_point(pla->pl);p1!=NULL;p1=get_next_point(pla->pl)) {
 			if(p1->it == p_iteration) remove_point_from_plane(p1,pla);
 		};
 	};
-//	- αφαίρεση των αντιστοίχων ακμών και δημιουργία νέων.
-// 3. Αφαίρεση όλων των σημείων του προηγούμενου iteration απο την λίστα σημείων. 
+//	- Ξ±Ο†Ξ±Ξ―ΟΞµΟƒΞ· Ο„Ο‰Ξ½ Ξ±Ξ½Ο„ΞΉΟƒΟ„ΞΏΞ―Ο‡Ο‰Ξ½ Ξ±ΞΊΞΌΟΞ½ ΞΊΞ±ΞΉ Ξ΄Ξ·ΞΌΞΉΞΏΟ…ΟΞ³Ξ―Ξ± Ξ½Ξ­Ο‰Ξ½.
+// 3. Ξ‘Ο†Ξ±Ξ―ΟΞµΟƒΞ· ΟΞ»Ο‰Ξ½ Ο„Ο‰Ξ½ ΟƒΞ·ΞΌΞµΞ―Ο‰Ξ½ Ο„ΞΏΟ… Ο€ΟΞ·Ξ³ΞΏΟ…ΞΌΞ­Ξ½ΞΏΟ… iteration Ξ±Ο€ΞΏ Ο„Ξ·Ξ½ Ξ»Ξ―ΟƒΟ„Ξ± ΟƒΞ·ΞΌΞµΞ―Ο‰Ξ½.
 	for(p1=get_first_point(ob->points);p1!=NULL;p1=get_next_point(ob->points)) {
 		if(p1->it == p_iteration) {
 //			if(iteration<4) printf("remove point %d %d\n",p1->id,p1->it);
@@ -809,16 +852,21 @@ void iterate(object *ob)
 			deleted_points++;
 		}
 	};
-// 4. Αφαίρεση όλων των ακμών του προηγούμενου iteration.
+// 4. AΟ†Ξ±Ξ―ΟΞµΟƒΞ· ΟΞ»Ο‰Ξ½ Ο„Ο‰Ξ½ Ξ±ΞΊΞΌΟΞ½ Ο„ΞΏΟ… Ο€ΟΞΏΞ·Ξ³ΞΏΟΞΌΞµΞ½ΞΏΟ… iteration.
 	for(a=get_first_akmi(ob->akmes);a!=NULL;a=get_next_akmi(ob->akmes)) {
 		if(a->it == p_iteration) {
 			remove_from_list((void *)a,ob->akmes);
 			deleted_akmes++;
 		};
 	};
-  	printf("iteration %d: added point %d,added planes %d,added akmes %d,!\n",iteration,new_points,new_planes,new_akmes);
-  	printf("  deleted points %d,deleted planes %d,deleted akmes %d,!\n",deleted_points,deleted_planes,deleted_akmes);
-	
+	printf("max_pdist = %f, min_pdist=%f\n",max_pdist,min_pdist);
+	printf("max_adist = %f, min_adist=%f\n",max_adist,min_adist);
+//  	printf("iteration %d: added point %d,added planes %d,added akmes %d,!\n",iteration,new_points,new_planes,new_akmes);
+//  	printf("  deleted points %d,deleted planes %d,deleted akmes %d,!\n",deleted_points,deleted_planes,deleted_akmes);
+	total_points += new_points - deleted_points;
+	total_akmes  += new_akmes - deleted_akmes;
+	total_planes += new_planes;
+	printf("total %d points, %d akmes, %d planes\n",total_points,total_akmes,total_planes);	
 	// show the planes
 //	show_planes(ob);
 //	show_object_connections(ob);

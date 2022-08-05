@@ -1,6 +1,8 @@
 GTK_LIBS = `gtk-config --libs`
 GTK_CFLAGS = `gtk-config --cflags`
 
+all: kcube
+
 list.o: list.c list.h
 	gcc list.c -c -o list.o
 
@@ -10,17 +12,16 @@ listm.o: list.c list.h
 #kcube: kcube.c list.o
 #	gcc kcube.c -o kcube list.o  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
 
+ifeq ($(UNAME), Darwin)
+GFLAGS=-DDARWIN=1 -framework GLUT -framework OpenGL -framework Cocoa
+else
+GFLAGS=-DDARWIN=0 -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11  -lXi -lm
+endif
+
 kcube: kcube.c list.o
-	gcc kcube.c -o kcube list.o  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11  -lXi -lm
+	gcc kcube.c -o kcube list.o ${GFLAGS}
 
-kcube1: kcube1.c list.o
-	gcc kcube1.c -o kcube1 list.o  -L/usr/X11R6/lib -lGL -lGLU -lglut -lX11 -lXmu -lXi -lm
-
-kcubem: kcubem.c listm.o
-	gcc kcubem.c -o kcubem listm.o -framework GLUT -framework OpenGL -framework Cocoa
-
-kcubema: kcubem.c listm.o
-	clang kcubem.c -o kcubema listm.o -framework GLUT -framework OpenGL -framework Cocoa
+#all: kcube
 
 clean:
 	rm -f kcube1 kcube kcubem *.o

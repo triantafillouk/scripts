@@ -1,13 +1,13 @@
 /********************************************************/
 /*                     kcube.c                           */
 /********************************************************/
-// Η σελίδα είναι σε utf-8
 
 #include <GL/glut.h>
 #include <stdio.h>
 #include <math.h>
 #include "list.h"
 #include "3delements.h"
+
 
 /* function declarations */
 void iterate(object *ob);
@@ -210,7 +210,7 @@ void show_planes(object *ob)
  };
 }
 
-/* add a point at the end of the plane list
+/* add a point at the end of the plane list */
 /* returns an akmi in case of a connection */
 akmi * add_point_to_plane(point *p, plane *pla,object *ob)
 {
@@ -259,12 +259,12 @@ int  remove_point_from_plane(point *p, plane *pla)
 
 int remove_plane_from_akmi(plane *pla,akmi *a)
 {
-  
+   return 1;
 }
 
 int remove_akmi_from_point(akmi *a,point *p)
 {
-
+	return 1;
 }
 
 /* check if two akmes have a common plane */
@@ -424,7 +424,7 @@ point * new_point_fd(point *p0,point *p1, double dist,int it)
  return p2;
 }
 
-int insert_point_in_plane(point *m1,plane *pla,akmi *a)
+void insert_point_in_plane(point *m1,plane *pla,akmi *a)
 {
  point *p1,*p2;
 // printf("insert midpoint %d on plane %d from akmi %d (%d,%d)\n",m1->id,pla->id,a->id,a->p[0]->id,a->p[1]->id);
@@ -535,6 +535,7 @@ object *cube0;
 
 int main(int argc,char **argv)
 {
+ char *window_title="Cube";
   anglex=20;// 20
   angley=10;// 10
   anglez=0;
@@ -554,7 +555,7 @@ int main(int argc,char **argv)
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   glutInitWindowPosition(400,100);
   glutInitWindowSize(400,400);
-  glutCreateWindow("Κύβος");
+  glutCreateWindow(window_title);
 
   /* Initialisation d'OpenGL */
   glClearColor(0.0,0.0,0.0,0.0);
@@ -786,18 +787,17 @@ void iterate(object *ob)
  };
 // show_object_connections(ob);
 
-// 1. Για κάθε σημείο P0 δημιουργούμε ένα νέο επίπεδο PLA0.
+// 1. For each point P0 we create a new plane PLA0.
  for(p0=get_first_point(ob->points);p0!=NULL;p0=get_next_point(ob->points)) {
 	double d;
  	if(p0->it == iteration) break;
  	pla0 = new_plane(iteration);
 	new_planes++;
 
-//	Το επίπεδο θα αποτελείται απο τα ενδιάμεσα σημεία του των ακμών
-//	που σχηματίζουν(ενώνονται) το σημείο P0, άρα:
-//		Γιά κάθε ακμή που συνδέεται με το σημείο P0:
+//	The plane will be defined by the mid points of the points of acnes that connect at P0, so
+//		For each acne that connects with the point P0
 		for(a0=a=get_first_akmi(p0->connected),p1=NULL,ap=NULL;a!=NULL;ap=a,a=get_next_akmi(p0->connected)) {
-//		- Δημιουργία του μεσαίου σημείου Μ1 (άν δεν έχει ήδη δημιουργηθεί!).
+//		- Creation of mid point M1 (if not already created!).
 			if(a->midpoint == NULL) {
 				m1 = new_mid_point(a->p[0],a->p[1],iteration);
 
@@ -809,13 +809,13 @@ void iterate(object *ob)
 				a->midpoint = m1;
 				add_point_to_object(m1,ob);
 				a->f = 1;	// set the flag that we have proccessed the akmi 
-// 		- Γιά κάθε επίπεδο στο οποίο ανήκει η ακμή.
+//		- For each plane the acne belongs to:
 				for(pla=get_first_plane(a->connected);pla!=NULL;pla=get_next_plane(a->connected)) {
-//		- εισαγωγή του Μ1 στο επίπεδο PLA ανάμεσα στα 2 σημεία της ακμής
+//		- insert of point M1 at plane PLA beetween the 2 points that define the acne.
 					insert_point_in_plane(m1,pla,a);
 				};
 			} else m1 = a->midpoint;
-//		- πρόσθεση του Μ1 στο PLA0
+//		- add the point M1 to PLA0
 			if(p1==NULL) p1=m1;	// store the first point of the plane
 			a1=add_point_to_plane(m1,pla0,ob);
 			if(a1) new_akmes++;
@@ -835,14 +835,14 @@ void iterate(object *ob)
 		add_plane_to_list(pla0,ob->planes);
  };
 // show_planes(ob);
-// 2. Αφαίρεση όλων των σημείων του προηγουμένου iteration από όλα τα επίπεδα (του προηγουμένου iteration).
+//	2. Remove all the points of the previous iteration from all planes of the previous iteration.
 	for(pla=get_first_plane(ob->planes);pla!=NULL;pla=get_next_plane(ob->planes)) {
 		for(p1=get_first_point(pla->pl);p1!=NULL;p1=get_next_point(pla->pl)) {
 			if(p1->it == p_iteration) remove_point_from_plane(p1,pla);
 		};
 	};
-//	- αφαίρεση των αντιστοίχων ακμών και δημιουργία νέων.
-// 3. Αφαίρεση όλων των σημείων του πρηγουμένου iteration απο την λίστα σημείων.
+//	- Remove all acnes of previous iteration and create new ones.
+//	- Remove all points of previous iteration from the point list.
 	for(p1=get_first_point(ob->points);p1!=NULL;p1=get_next_point(ob->points)) {
 		if(p1->it == p_iteration) {
 //			if(iteration<4) printf("remove point %d %d\n",p1->id,p1->it);
@@ -850,7 +850,7 @@ void iterate(object *ob)
 			deleted_points++;
 		}
 	};
-// 4. Aφαίρεση όλων των ακμών του προηγούμενου iteration.
+//	4. Remove all acnes of previous iteration
 	for(a=get_first_akmi(ob->akmes);a!=NULL;a=get_next_akmi(ob->akmes)) {
 		if(a->it == p_iteration) {
 			remove_from_list((void *)a,ob->akmes);

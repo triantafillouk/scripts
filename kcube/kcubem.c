@@ -2,7 +2,6 @@
 /*                     kcube.c                           */
 /********************************************************/
 
-
 #include <GLUT/glut.h>
 #include <stdio.h>
 #include <math.h>
@@ -536,7 +535,7 @@ object *cube0;
 
 int main(int argc,char **argv)
 {
- char *window_title="ÎšÏÎ²Î¿Ï‚";
+ char *window_title="Cube";
   anglex=20;// 20
   angley=10;// 10
   anglez=0;
@@ -790,18 +789,18 @@ void iterate(object *ob)
  };
 // show_object_connections(ob);
 
-// 1. Ãéá êÜèå óçìåßï P0 äçìéïõñãïýìå Ýíá íÝï åðßðåäï PLA0.
+// 1. Î“Î¹Î± ÎºÎ¬Î¸Îµ ÏƒÎ·Î¼ÎµÎ¯Î¿ P0 Î´Î·Î¼Î¹Î¿Ï…ÏÎ³Î¿ÏÎ¼Îµ Î­Î½Î± Î½Î­Î¿ ÎµÏ€Î¯Ï€ÎµÎ´Î¿ PLA0.
  for(p0=get_first_point(ob->points);p0!=NULL;p0=get_next_point(ob->points)) {
 	double d;
  	if(p0->it == iteration) break;
  	pla0 = new_plane(iteration);
 	new_planes++;
 
-//	Ôï åðßðåäï èá áðïôåëåßôáé áðï ôá åíäéÜìåóá óçìåßá ôïõ ôùí áêìþí  
-//	ðïõ ó÷çìáôßæïõí(åíþíïíôáé) ôï óçìåßï P0, Üñá:
-//		Ãéá êÜèå áêìÞ ðïõ óõíäÝåôáé ìå ôï óçìåßï P0:
+//	Î¤Î¿ ÎµÏ€Î¯Ï€ÎµÎ´Î¿ Î¸Î± Î±Ï€Î¿Ï„ÎµÎ»ÎµÎ¯Ï„Î±Î¹ Î±Ï€Î¿ Ï„Î± ÎµÎ½Î´Î¹Î¬Î¼ÎµÏƒÎ± ÏƒÎ·Î¼ÎµÎ¯Î± Ï„Î¿Ï… Ï„Ï‰Î½ Î±ÎºÎ¼ÏŽÎ½  
+//	Ï€Î¿Ï… ÏƒÏ‡Î·Î¼Î±Ï„Î¯Î¶Î¿Ï…Î½(ÎµÎ½ÏŽÎ½Î¿Î½Ï„Î±Î¹) Ï„Î¿ ÏƒÎ·Î¼ÎµÎ¯Î¿ P0, Î¬ÏÎ±:
+//		Î“Î¹Î± ÎºÎ¬Î¸Îµ Î±ÎºÎ¼Î® Ï€Î¿Ï… ÏƒÏ…Î½Î´Î­ÎµÏ„Î±Î¹ Î¼Îµ Ï„Î¿ ÏƒÎ·Î¼ÎµÎ¯Î¿ P0:
 		for(a0=a=get_first_akmi(p0->connected),p1=NULL,ap=NULL;a!=NULL;ap=a,a=get_next_akmi(p0->connected)) {
-//		- Äçìéïõñãßá ôïõ ìåóáßïõ óçìåßïõ Ì1 (áí äåí Ý÷åé Þäç äçìéïõñãçèåß!).
+//		- Î”Î·Î¼Î¹Î¿Ï…ÏÎ³Î¯Î± Ï„Î¿Ï… Î¼ÎµÏƒÎ±Î¯Î¿Ï… ÏƒÎ·Î¼ÎµÎ¯Î¿Ï… Îœ1 (Î±Î½ Î´ÎµÎ½ Î­Ï‡ÎµÎ¹ Î®Î´Î· Î´Î·Î¼Î¹Î¿Ï…ÏÎ³Î·Î¸ÎµÎ¯!).
 			if(a->midpoint == NULL) {
 				m1 = new_mid_point(a->p[0],a->p[1],iteration);
 
@@ -813,13 +812,13 @@ void iterate(object *ob)
 				a->midpoint = m1;
 				add_point_to_object(m1,ob);
 				a->f = 1;	// set the flag that we have proccessed the akmi 
-// 		- Ãéá êÜèå åðßðåäï óôï ïðïßï áíÞêåé ç áêìÞ.
+// 		- Î“Î¹Î± ÎºÎ¬Î¸Îµ ÎµÏ€Î¯Ï€ÎµÎ´Î¿ ÏƒÏ„Î¿ Î¿Ï€Î¿Î¯Î¿ Î±Î½Î®ÎºÎµÎ¹ Î· Î±ÎºÎ¼Î®.
 				for(pla=get_first_plane(a->connected);pla!=NULL;pla=get_next_plane(a->connected)) {
-//		- åéóáãùãç ôïõ Ì1 óôï åðßðåäï PLA áíáìåóá óôá 2 óçìåéá ôçò áêìçò
+//		- ÎµÎ¹ÏƒÎ±Î³Ï‰Î³Î· Ï„Î¿Ï… Îœ1 ÏƒÏ„Î¿ ÎµÏ€Î¯Ï€ÎµÎ´Î¿ PLA Î±Î½Î±Î¼ÎµÏƒÎ± ÏƒÏ„Î± 2 ÏƒÎ·Î¼ÎµÎ¹Î± Ï„Î·Ï‚ Î±ÎºÎ¼Î·Ï‚
 					insert_point_in_plane(m1,pla,a);
 				};
 			} else m1 = a->midpoint;
-//		- ðñüóèåóç ôïõ Ì1 óôï PLA0.
+//		- Ï€ÏÏŒÏƒÎ¸ÎµÏƒÎ· Ï„Î¿Ï… Îœ1 ÏƒÏ„Î¿ PLA0.
 			if(p1==NULL) p1=m1;	// store the first point of the plane
 			a1=add_point_to_plane(m1,pla0,ob);
 			if(a1) new_akmes++;
@@ -839,14 +838,14 @@ void iterate(object *ob)
 		add_plane_to_list(pla0,ob->planes);
  };
 // show_planes(ob);
-// 2. Áöáßñåóç üëùí ôùí óçìåßùí ôïõ ðñïçãïýìåíïõ iteration áðü üëá ôá åðßðåäá (ôïõ ðñïçãïýìåíïõ iteration).
+// 2. Î‘Ï†Î±Î¯ÏÎµÏƒÎ· ÏŒÎ»Ï‰Î½ Ï„Ï‰Î½ ÏƒÎ·Î¼ÎµÎ¯Ï‰Î½ Ï„Î¿Ï… Ï€ÏÎ¿Î·Î³Î¿ÏÎ¼ÎµÎ½Î¿Ï… iteration Î±Ï€ÏŒ ÏŒÎ»Î± Ï„Î± ÎµÏ€Î¯Ï€ÎµÎ´Î± (Ï„Î¿Ï… Ï€ÏÎ¿Î·Î³Î¿ÏÎ¼ÎµÎ½Î¿Ï… iteration).
 	for(pla=get_first_plane(ob->planes);pla!=NULL;pla=get_next_plane(ob->planes)) {
 		for(p1=get_first_point(pla->pl);p1!=NULL;p1=get_next_point(pla->pl)) {
 			if(p1->it == p_iteration) remove_point_from_plane(p1,pla);
 		};
 	};
-//	- áöáßñåóç ôùí áíôéóôïß÷ùí áêìþí êáé äçìéïõñãßá íÝùí.
-// 3. Áöáßñåóç üëùí ôùí óçìåßùí ôïõ ðñïçãïýìåíïõ iteration áðï ôçí ëßóôá óçìåßùí. 
+//	- Î±Ï†Î±Î¯ÏÎµÏƒÎ· Ï„Ï‰Î½ Î±Î½Ï„Î¹ÏƒÏ„Î¿Î¯Ï‡Ï‰Î½ Î±ÎºÎ¼ÏŽÎ½ ÎºÎ±Î¹ Î´Î·Î¼Î¹Î¿Ï…ÏÎ³Î¯Î± Î½Î­Ï‰Î½.
+// 3. Î‘Ï†Î±Î¯ÏÎµÏƒÎ· ÏŒÎ»Ï‰Î½ Ï„Ï‰Î½ ÏƒÎ·Î¼ÎµÎ¯Ï‰Î½ Ï„Î¿Ï… Ï€ÏÎ¿Î·Î³Î¿ÏÎ¼ÎµÎ½Î¿Ï… iteration Î±Ï€Î¿ Ï„Î·Î½ Î»Î¯ÏƒÏ„Î± ÏƒÎ·Î¼ÎµÎ¯Ï‰Î½. 
 	for(p1=get_first_point(ob->points);p1!=NULL;p1=get_next_point(ob->points)) {
 		if(p1->it == p_iteration) {
 //			if(iteration<4) printf("remove point %d %d\n",p1->id,p1->it);
@@ -854,7 +853,7 @@ void iterate(object *ob)
 			deleted_points++;
 		}
 	};
-// 4. Áöáßñåóç üëùí ôùí áêìþí ôïõ ðñïçãïýìåíïõ iteration.
+// 4. Î‘Ï†Î±Î¯ÏÎµÏƒÎ· ÏŒÎ»Ï‰Î½ Ï„Ï‰Î½ Î±ÎºÎ¼ÏŽÎ½ Ï„Î¿Ï… Ï€ÏÎ¿Î·Î³Î¿ÏÎ¼ÎµÎ½Î¿Ï… iteration.
 	for(a=get_first_akmi(ob->akmes);a!=NULL;a=get_next_akmi(ob->akmes)) {
 		if(a->it == p_iteration) {
 			remove_from_list((void *)a,ob->akmes);
